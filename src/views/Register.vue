@@ -38,9 +38,9 @@
         <van-button round block type="info" native-type="submit">注册</van-button>
       </div>
     </van-form>
-    <div class="login">
-      <van-button round block @click="login">登录</van-button>
-    </div>
+    <router-link to="/login">
+      <van-button round block class="link-login">登录</van-button>
+    </router-link>
   </div>
 </template>
 
@@ -63,7 +63,7 @@ export default {
       // 调用axios发起异步请求，类似$.ajax(类似不代表一样)
       this.$axios({
         // 接口地址
-        url: "http://127.0.0.1:3000/register",
+        url: "/register",
         // 声明请求的方法为post请求(一定要注册这个method没有s)
         // 跟vue的methods属性毫无关系
         method: "POST",
@@ -71,20 +71,19 @@ export default {
         data: this.form
         // .then方法里面的函数就是成功的回调函数,axios没有succces
       }).then(res => {
+        console.log(res);
+
         // 获取到返回的信息
         const { message } = res.data;
         // 使用vant的弹窗提示用，success表示成功的弹窗
         this.$toast.success(message);
       });
-    },
-    login() {
-      location.href = "http://localhost:8080/login";
     }
   }
 };
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .middle {
   padding: 20/360 * 100vw;
 }
@@ -116,7 +115,7 @@ export default {
     border: 1px solid #cc3300;
   }
 }
-.login {
+.link-login {
   margin-top: 20/360 * 100vw;
 }
 </style>
