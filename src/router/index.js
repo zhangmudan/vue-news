@@ -11,6 +11,11 @@ const routes = [
     path: '/login',
     //除了首页之外的都可以懒加载
     component: () => import('@/views/Login')
+  },
+  {
+    path: '/register',
+    //除了首页之外的都可以懒加载
+    component: () => import('@/views/Register')
   }
 ]
 

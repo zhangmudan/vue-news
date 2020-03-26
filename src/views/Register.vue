@@ -17,6 +17,13 @@
         placeholder="手机号码"
         :rules="[{ required: true, message: '请填写手机号码' }]"
       />
+      <!-- 昵称 -->
+      <van-field
+        v-model="form.nickname"
+        name="昵称"
+        placeholder="昵称"
+        :rules="[{ required: true, message: '请填写昵称' }]"
+      />
       <!-- 密码输入框，和上面的属性是一样的 -->
       <van-field
         v-model="form.password"
@@ -28,11 +35,11 @@
       <div>
         <!-- 如果这个按钮是在van-form组件内部，
         并且按钮的native-type="submit"，说明点击这个按钮就会触发submit事件-->
-        <van-button round block type="info" native-type="submit">登录</van-button>
+        <van-button round block type="info" native-type="submit">注册</van-button>
       </div>
     </van-form>
-    <div class="register">
-      <van-button round block @click="register">注册</van-button>
+    <div class="login">
+      <van-button round block @click="login">登录</van-button>
     </div>
   </div>
 </template>
@@ -44,6 +51,7 @@ export default {
       //保存表单数据
       form: {
         username: "",
+        nickname: "",
         password: ""
       }
     };
@@ -55,7 +63,7 @@ export default {
       // 调用axios发起异步请求，类似$.ajax(类似不代表一样)
       this.$axios({
         // 接口地址
-        url: "http://127.0.0.1:3000/login",
+        url: "http://127.0.0.1:3000/register",
         // 声明请求的方法为post请求(一定要注册这个method没有s)
         // 跟vue的methods属性毫无关系
         method: "POST",
@@ -69,15 +77,14 @@ export default {
         this.$toast.success(message);
       });
     },
-    register() {
-      location.href = "http://localhost:8080/register";
+    login() {
+      location.href = "http://localhost:8080/login";
     }
   }
 };
 </script>
 
-<style lang="less" scoped>
-// scoped 表示只针对当前页面
+<style lang="less">
 .middle {
   padding: 20/360 * 100vw;
 }
@@ -109,7 +116,7 @@ export default {
     border: 1px solid #cc3300;
   }
 }
-.register {
+.login {
   margin-top: 20/360 * 100vw;
 }
 </style>
