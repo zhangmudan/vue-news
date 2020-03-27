@@ -23,6 +23,19 @@ const routes = [
     path: '/personal',
     //除了首页之外的都可以懒加载
     component: () => import('@/views/Personal')
+  },
+  //编辑资料 
+  {
+    path: '/editprofile',
+    //除了首页之外的都可以懒加载
+    component: () => import('@/views/Editprofile')
+  },
+
+  //我的关注 
+  {
+    path: '/follow',
+    //除了首页之外的都可以懒加载
+    component: () => import('@/views/Follow')
   }
 ]
 
@@ -31,5 +44,5 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-
+//暴露路由
 export default router

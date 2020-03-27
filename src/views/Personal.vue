@@ -1,38 +1,64 @@
 <template>
   <div>
+    <!-- 导航 -->
+    <div class="nav">
+      <!-- 因为template标签都是包含着this这个对象中, $router.back() 就如调用data中的数据不需要使用this一样 -->
+      <span class="iconfont iconjiantou2" @click="$router.back()"></span>
+      <strong>个人中心</strong>
+      <span class="iconfont iconshouye" @click="$router.push('/')"></span>
+    </div>
+    <!-- 头部 -->
     <div class="header">
       <div class="img">
-        <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt />
+        <!-- 渲染头像时因为来自后台所以要加上后台地址 -->
+        <img :src="'http://127.0.0.1:3000' + userInfo.head_img" alt />
       </div>
       <div class="profile">
         <div>
-          <i class="iconfont iconxingbienan"></i>
-          <span>火星网友</span>
-          <p>2019-10-10</p>
+          <i class="iconfont iconxingbienan" v-if="userInfo.gender === 1"></i>
+          <i class="iconfont iconxingbienv" v-if="userInfo.gender === 0"></i>
+          <span>{{ userInfo.nickname }}</span>
+          <p>{{ moment(userInfo.create_date).format("YYYY - MM - DD") }}</p>
         </div>
-        <div class="jiantou">
-          <i class="iconfont iconjiantou1"></i>
-        </div>
+
+        <i
+          class="iconfont iconjiantou1"
+          @click="$router.push('/editprofile')"
+        ></i>
       </div>
     </div>
+    <!-- 列表 -->
     <!-- :key 不是报错,可以不加,但是vue希望给循环指定唯一的key ,所以推荐加上 -->
-    <Listbar v-for="(item,index) in listbar" :key="index" :label="item.label" :tips="item.tips" />
+    <Listbar
+      v-for="(item, index) in listbar"
+      :key="index"
+      :label="item.label"
+      :tips="item.tips"
+    />
+    <!-- click.native这个事件类型，会给Listbar这个组件最外部的div强制绑定点击事件
+不要去跟事件传递作比较 -->
+    <Listbar label="退出" @click.native="out" />
   </div>
 </template>
 
 <script>
 //导入列表组件
 import Listbar from "@/components/Listbar";
+//引入时间插件
+import moment from "moment";
 export default {
   data() {
     return {
-      //组织数据
+      //组织列表数据
       listbar: [
         { label: "我的关注", tips: "关注的用户" },
         { label: "我的跟帖", tips: "跟帖/回复" },
-        { label: "我的收藏", tips: "文章/视频" },
-        { label: "设置", tips: "" }
-      ]
+        { label: "我的收藏", tips: "文章/视频" }
+      ],
+      //用户信息
+      userInfo: {},
+      //挂载插件
+      moment
     };
   },
   components: {
@@ -46,7 +72,7 @@ export default {
     //发起请求
     this.$axios({
       url: "/user/" + userJson.user.id,
-      //不见method 默认请求发送为get
+      //不写method 默认请求发送为get
       method: "GET",
       //添加验证信息
       headers: {
@@ -54,13 +80,39 @@ export default {
       }
     }).then(response => {
       console.log(response);
+      const { data } = response.data;
+      this.userInfo = data;
     });
   },
-  methods: {}
+  methods: {
+    out() {
+      //引入 Dialog 组件后，会自动在 Vue 的 prototype 上挂载 $dialog 方法，在所有组件内部都可以直接调用此方法
+      this.$dialog
+        .confirm({
+          title: "退出",
+          message: "您确定退出吗?"
+        })
+        .then(() => {
+          localStorage.removeItem("userInfor");
+          this.$router.replace("/login");
+        })
+        .catch(() => {});
+    }
+  }
 };
 </script>
 
-<style lang='less' scoped>
+<style lang="less" scoped>
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  line-height: 48/360 * 100vw;
+  padding: 0 20/360 * 100vw;
+  span {
+    font-size: 20/360 * 100vw;
+  }
+}
 .header {
   display: flex;
   padding: 30/360 * 100vw 20/360 * 100vw;
@@ -83,6 +135,11 @@ export default {
     font-size: 15/360 * 100vw;
     .iconxingbienan {
       color: #70b6ea;
+      font-size: 18/360 * 100vw;
+      margin-right: 5px;
+    }
+    .iconxingbienv {
+      color: #ff759a;
       font-size: 18/360 * 100vw;
       margin-right: 5px;
     }

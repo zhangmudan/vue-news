@@ -16,6 +16,28 @@ Vue.use(Vant);
 //上线环境是否提示信息(忽略)
 Vue.config.productionTip = false;
 
+// 添加路由的守卫
+// to: 代表你即将要访问的页面
+// from：代表你即将要离开的页面
+// next：必须要调用，next就类似于你nodejs的中间件，调用才会加载后面的内容
+router.beforeEach((to, from, next) => {
+  // console.log(to);
+  if (to.path === '/personal') {
+    //获取本地数据 判断是否非法进入
+    const userJson = JSON.parse(localStorage.getItem("userInfor")) || {};
+    if (userJson.token) {
+      next()
+    } else {
+      // 跳转到登录页,next这个函数可以传递路径，并且会跳转该路径
+      next('/login')
+    }
+  } else {
+    next()
+  }
+
+})
+
+
 //创建根实例
 //.$mount('#app')相当于el配置,指定id为app的元素作为模板
 new Vue({
