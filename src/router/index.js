@@ -12,15 +12,17 @@ const routes = [
     //除了首页之外的都可以懒加载
     component: () => import('@/views/Login')
   },
+  //注册页
   {
     path: '/register',
     //除了首页之外的都可以懒加载
     component: () => import('@/views/Register')
   },
+  //个人中心页
   {
-    path: '/user',
+    path: '/personal',
     //除了首页之外的都可以懒加载
-    component: () => import('@/views/User')
+    component: () => import('@/views/Personal')
   }
 ]
 

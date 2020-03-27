@@ -66,9 +66,13 @@ export default {
         console.log(res);
 
         // 获取到返回的信息
-        const { message } = res.data;
+        const { message, data } = res.data;
         // 使用vant的弹窗提示用，success表示成功的弹窗
         this.$toast.success(message);
+        //把token和id保存到本地 localStorage只能保存字符串
+        localStorage.setItem("userInfor", JSON.stringify(data));
+        //跳转到个人中心页
+        this.$router.push("/personal");
       });
     },
     register() {
