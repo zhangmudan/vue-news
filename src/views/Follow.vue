@@ -1,28 +1,60 @@
 <template>
   <div>
     <!-- 导航 -->
-    <div class="nav">
-      <span class="iconfont iconjiantou2" @click="$router.back()"></span>
-      <strong>我的关注</strong>
-      <span></span>
+    <Navigate title="我的关注" />
+    <div class="list">
+      <div class="left">
+        <div class="img">
+          <img src="https://img.yzcdn.cn/vant/leaf.jpg" alt />
+        </div>
+        <div class="content">
+          <p>火星新闻报</p>
+          <p>2019-10-10</p>
+        </div>
+      </div>
+      <div class="right">取消关注</div>
     </div>
-    <div class="list"></div>
   </div>
 </template>
 
 <script>
-export default {};
+//头部组件
+import Navigate from "@/components/Navigate";
+export default {
+  components: { Navigate }
+};
 </script>
 
 <style lang="less" scoped>
-.nav {
+.list {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  line-height: 48/360 * 100vw;
-  padding: 0 20/360 * 100vw;
-  span {
-    font-size: 20/360 * 100vw;
+  margin-top: 10/360 * 100vw;
+  border-bottom: 1px solid #d7d7d7;
+  padding: 20/360 * 100vw;
+  .left {
+    display: flex;
+
+    .img {
+      width: 40/360 * 100vw;
+      height: 40/360 * 100vw;
+      margin: 0 15/360 * 100vw;
+    }
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+  }
+  .right {
+    width: 75/360 * 100vw;
+    height: 30/360 * 100vw;
+    background-color: #e1e1e1;
+    text-align: center;
+    line-height: 30/360 * 100vw;
+    border-radius: 15/360 * 100vw;
+    font-size: 14/360 * 100vw;
   }
 }
 </style>

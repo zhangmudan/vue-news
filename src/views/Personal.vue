@@ -1,42 +1,31 @@
 <template>
   <div>
     <!-- 导航 -->
-    <div class="nav">
-      <!-- 因为template标签都是包含着this这个对象中, $router.back() 就如调用data中的数据不需要使用this一样 -->
-      <span class="iconfont iconjiantou2" @click="$router.back()"></span>
-      <strong>个人中心</strong>
-      <span class="iconfont iconshouye" @click="$router.push('/')"></span>
-    </div>
+    <Navigate title="个人中心" isShow="true" />
     <!-- 头部 -->
-    <div class="header">
-      <div class="img">
-        <!-- 渲染头像时因为来自后台所以要加上后台地址 -->
-        <img :src="'http://127.0.0.1:3000' + userInfo.head_img" alt />
-      </div>
-      <div class="profile">
-        <div>
-          <i class="iconfont iconxingbienan" v-if="userInfo.gender === 1"></i>
-          <i class="iconfont iconxingbienv" v-if="userInfo.gender === 0"></i>
-          <span>{{ userInfo.nickname }}</span>
-          <p>{{ moment(userInfo.create_date).format("YYYY - MM - DD") }}</p>
+    <router-link to="/editprofile">
+      <div class="header">
+        <div class="img">
+          <!-- 渲染头像时因为来自后台所以要加上后台地址 -->
+          <img :src="'http://127.0.0.1:3000' + userInfo.head_img" alt />
         </div>
+        <div class="profile">
+          <div>
+            <i class="iconfont iconxingbienan" v-if="userInfo.gender === 1"></i>
+            <i class="iconfont iconxingbienv" v-if="userInfo.gender === 0"></i>
+            <span>{{ userInfo.nickname }}</span>
+            <p>{{ moment(userInfo.create_date).format("YYYY - MM - DD") }}</p>
+          </div>
 
-        <i
-          class="iconfont iconjiantou1"
-          @click="$router.push('/editprofile')"
-        ></i>
+          <i class="iconfont iconjiantou1"></i>
+        </div>
       </div>
-    </div>
+    </router-link>
     <!-- 列表 -->
     <!-- :key 不是报错,可以不加,但是vue希望给循环指定唯一的key ,所以推荐加上 -->
-    <Listbar
-      v-for="(item, index) in listbar"
-      :key="index"
-      :label="item.label"
-      :tips="item.tips"
-    />
+    <Listbar v-for="(item, index) in listbar" :key="index" :label="item.label" :tips="item.tips" />
     <!-- click.native这个事件类型，会给Listbar这个组件最外部的div强制绑定点击事件
-不要去跟事件传递作比较 -->
+    不要去跟事件传递作比较-->
     <Listbar label="退出" @click.native="out" />
   </div>
 </template>
@@ -44,6 +33,8 @@
 <script>
 //导入列表组件
 import Listbar from "@/components/Listbar";
+//头部组件
+import Navigate from "@/components/Navigate";
 //引入时间插件
 import moment from "moment";
 export default {
@@ -63,7 +54,8 @@ export default {
   },
   components: {
     //注册子组件
-    Listbar
+    Listbar,
+    Navigate
   },
   mounted() {
     //获取本地数据
@@ -103,16 +95,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  line-height: 48/360 * 100vw;
-  padding: 0 20/360 * 100vw;
-  span {
-    font-size: 20/360 * 100vw;
-  }
-}
 .header {
   display: flex;
   padding: 30/360 * 100vw 20/360 * 100vw;
