@@ -42,6 +42,12 @@ const routes = [
     path: '/comment',
     //除了首页之外的都可以懒加载
     component: () => import('@/views/Comment')
+  },
+  //我的收藏
+  {
+    path: '/start',
+    //除了首页之外的都可以懒加载
+    component: () => import('@/views/Start')
   }
 ]
 

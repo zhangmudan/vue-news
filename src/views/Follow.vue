@@ -8,7 +8,7 @@
         <p>{{item.nickname}}</p>
         <p>{{moment(item.create_date).format("YYYY - MM - DD")}}</p>
       </div>
-      <div class="right">取消关注</div>
+      <div class="right" @click="unfollow(item.id,index)">取消关注</div>
     </div>
   </div>
 </template>
@@ -21,28 +21,53 @@ import moment from "moment";
 export default {
   data() {
     return {
-      follows: {},
+      follows: [],
       //挂载插件
-      moment
+      moment,
+      local: {}
     };
   },
   components: { Navigate },
   mounted() {
     //获取本地存储数据
     const local = JSON.parse(localStorage.getItem("userInfor"));
+    this.local = local;
     // console.log(local);
-
     this.$axios({
       url: "/user_follows",
       headers: {
         Authorization: local.token
       }
     }).then(res => {
-      console.log(res);
+      // console.log(res);
       const { data } = res.data;
       this.follows = data;
       // console.log(data);
     });
+  },
+  methods: {
+    unfollow(id, index) {
+      // console.log(id, index);
+      //引入 Dialog 组件后，会自动在 Vue 的 prototype 上挂载 $dialog 方法，在所有组件内部都可以直接调用此方法
+      this.$dialog
+        .confirm({
+          title: "取消关注",
+          message: "您确定取消关注吗?"
+        })
+        .then(() => {
+          this.$axios({
+            url: "/user_unfollow/" + id,
+            headers: {
+              Authorization: this.local.token
+            }
+          }).then(res => {
+            // console.log(res);
+            this.$toast.success("取消关注成功");
+            this.follows.splice(index, 1);
+          });
+        })
+        .catch(() => {});
+    }
   }
 };
 </script>
