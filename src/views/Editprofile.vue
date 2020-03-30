@@ -6,7 +6,9 @@
     <div class="header">
       <div class="img">
         <!-- 渲染头像时因为来自后台所以要加上后台地址 -->
-        <img :src="'http://127.0.0.1:3000' + userInfo.head_img" alt />
+        <!-- <img :src="'http://127.0.0.1:3000' + userInfo.head_img" alt /> -->
+        <!-- 获取axios的基路径 -->
+        <img :src="$axios.defaults.baseURL + userInfo.head_img" />
         <!-- 调用文件上传按钮 -->
         <van-uploader :after-read="afterRead" class="uploads" />
       </div>
@@ -79,8 +81,8 @@ export default {
       // console.log(res);
       const { data } = res.data;
       this.userInfo = data;
+      // 单独保存nickname给编辑的弹窗使用
       this.nickname = data.nickname;
-      this.password = data.password;
     });
   },
   methods: {
@@ -110,13 +112,15 @@ export default {
     },
     //上传信息函数
     modify(data) {
-      this.$axios({
+      //优化 把数据返回 then可以添加无数个
+      return this.$axios({
         url: "/user_update/" + this.userJson.user.id,
         method: "POST",
         //添加验证信息
         headers: {
           Authorization: this.userJson.token
         },
+        //属性名和变量名一样,可简写
         data
       }).then(res => {
         this.$toast.success("修改成功");
@@ -125,9 +129,13 @@ export default {
     //修改昵称
     confirmNickname() {
       //调用修改函数,与数据库关联
-      this.modify({ nickname: this.nickname });
+      const request = this.modify({ nickname: this.nickname });
       //把修改后的数据显示在页面
-      this.userInfo.nickname = this.nickname;
+      //请求成功后执行
+      request.then(() => {
+        //请求成功再修改
+        this.userInfo.nickname = this.nickname;
+      });
     },
     //修改密码
     confirmPassword() {
@@ -135,24 +143,16 @@ export default {
     },
     //修改性别
     onSelect(item) {
-      this.modify({ gender: item.value });
-      this.userInfo.gender = item.value;
+      const request = this.modify({ gender: item.value });
+      request.then(() => {
+        this.userInfo.gender = item.value;
+      });
     }
   }
 };
 </script>
 
 <style lang="less" scoped>
-.nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  line-height: 48/360 * 100vw;
-  padding: 0 20/360 * 100vw;
-  span {
-    font-size: 20/360 * 100vw;
-  }
-}
 .header {
   display: flex;
   justify-content: center;

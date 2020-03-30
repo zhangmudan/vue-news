@@ -36,6 +36,12 @@ const routes = [
     path: '/follow',
     //除了首页之外的都可以懒加载
     component: () => import('@/views/Follow')
+  },
+  //我的跟帖
+  {
+    path: '/comment',
+    //除了首页之外的都可以懒加载
+    component: () => import('@/views/Comment')
   }
 ]
 

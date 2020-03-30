@@ -12,6 +12,8 @@ import axios from "axios";
 Vue.prototype.$axios = axios;
 //基础路径
 axios.defaults.baseURL = "http://localhost:3000"
+//线上路径
+// axios.defaults.baseURL = "http://hmtoutiao-api.atlansic.com/"
 Vue.use(Vant);
 //上线环境是否提示信息(忽略)
 Vue.config.productionTip = false;

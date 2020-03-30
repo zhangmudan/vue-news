@@ -7,7 +7,9 @@
       <div class="header">
         <div class="img">
           <!-- 渲染头像时因为来自后台所以要加上后台地址 -->
-          <img :src="'http://127.0.0.1:3000' + userInfo.head_img" alt />
+          <!-- <img :src="'http://127.0.0.1:3000' + userInfo.head_img" alt /> -->
+          <!-- 获取axios的基路径 -->
+          <img :src="$axios.defaults.baseURL + userInfo.head_img" />
         </div>
         <div class="profile">
           <div>
@@ -23,7 +25,13 @@
     </router-link>
     <!-- 列表 -->
     <!-- :key 不是报错,可以不加,但是vue希望给循环指定唯一的key ,所以推荐加上 -->
-    <Listbar v-for="(item, index) in listbar" :key="index" :label="item.label" :tips="item.tips" />
+    <Listbar
+      v-for="(item, index) in listbar"
+      :key="index"
+      :label="item.label"
+      :tips="item.tips"
+      :path="item.path"
+    />
     <!-- click.native这个事件类型，会给Listbar这个组件最外部的div强制绑定点击事件
     不要去跟事件传递作比较-->
     <Listbar label="退出" @click.native="out" />
@@ -42,9 +50,9 @@ export default {
     return {
       //组织列表数据
       listbar: [
-        { label: "我的关注", tips: "关注的用户" },
-        { label: "我的跟帖", tips: "跟帖/回复" },
-        { label: "我的收藏", tips: "文章/视频" }
+        { label: "我的关注", tips: "关注的用户", path: "/follow" },
+        { label: "我的跟帖", tips: "跟帖/回复", path: "/comment" },
+        { label: "我的收藏", tips: "文章/视频", path: "/start" }
       ],
       //用户信息
       userInfo: {},

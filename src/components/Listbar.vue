@@ -1,6 +1,7 @@
 <template>
   <div class="listbar">
-    <router-link to="#">
+    <!-- 因为退出没有路径所以要加逻辑判断 -->
+    <router-link :to="path||'#'">
       <span>{{label}}</span>
       <span class="right">
         {{tips}}
@@ -13,7 +14,7 @@
 <script>
 export default {
   //声明可接收数据
-  props: ["label", "tips"]
+  props: ["label", "tips", "path"]
 };
 </script>
 
