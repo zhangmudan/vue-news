@@ -17,6 +17,13 @@ const routes = [
     path: "/index",
     component: () => import('@/views/Index')
   },
+  //栏目管理
+  {
+    path: '/column',
+    //除了首页之外的都可以懒加载
+    component: () => import('@/views/Column'),
+
+  },
 
   //登录页
   {
