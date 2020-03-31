@@ -6,6 +6,18 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
+  //路由重定向
+  {
+    path: "/",
+    // 如果匹配到斜杠/，重定向到/user
+    redirect: "/index"
+  },
+  //首页
+  {
+    path: "/index",
+    component: () => import('@/views/Index')
+  },
+
   //登录页
   {
     path: '/login',
@@ -22,32 +34,42 @@ const routes = [
   {
     path: '/personal',
     //除了首页之外的都可以懒加载
-    component: () => import('@/views/Personal')
+    component: () => import('@/views/Personal'),
+    // 路由守卫权限
+    meta: { guard: true }
   },
   //编辑资料 
   {
     path: '/editprofile',
     //除了首页之外的都可以懒加载
-    component: () => import('@/views/Editprofile')
+    component: () => import('@/views/Editprofile'),
+    // 路由守卫权限
+    meta: { guard: true }
   },
 
   //我的关注 
   {
     path: '/follow',
     //除了首页之外的都可以懒加载
-    component: () => import('@/views/Follow')
+    component: () => import('@/views/Follow'),
+    // 路由守卫权限
+    meta: { guard: true }
   },
   //我的跟帖
   {
     path: '/comment',
     //除了首页之外的都可以懒加载
-    component: () => import('@/views/Comment')
+    component: () => import('@/views/Comment'),
+    // 路由守卫权限
+    meta: { guard: true }
   },
   //我的收藏
   {
     path: '/start',
     //除了首页之外的都可以懒加载
-    component: () => import('@/views/Start')
+    component: () => import('@/views/Start'),
+    // 路由守卫权限
+    meta: { guard: true }
   }
 ]
 

@@ -1,7 +1,7 @@
 //vue 构造函数
 import Vue from 'vue';
 //vant 组件库
-import Vant from 'vant';
+import Vant, { Toast } from 'vant';
 //App组件(以.vue结尾的文件都是组件)
 import App from './App.vue';
 //路由对象
@@ -24,7 +24,7 @@ Vue.config.productionTip = false;
 // next：必须要调用，next就类似于你nodejs的中间件，调用才会加载后面的内容
 router.beforeEach((to, from, next) => {
   // console.log(to);
-  if (to.path === '/personal') {
+  if (to.meta.guard) {
     //获取本地数据 判断是否非法进入
     const userJson = JSON.parse(localStorage.getItem("userInfor")) || {};
     if (userJson.token) {
@@ -39,6 +39,19 @@ router.beforeEach((to, from, next) => {
 
 })
 
+//axios拦截器
+axios.interceptors.response.use(function (response) {
+
+  return response;
+}, function (error) {
+  console.log(error.response);
+  const { statusCode, message } = error.response.data
+  if (statusCode === 400) {
+    Toast.fail(message);
+  }
+
+  return Promise.reject(error);
+});
 
 //创建根实例
 //.$mount('#app')相当于el配置,指定id为app的元素作为模板

@@ -79,7 +79,7 @@ export default {
         Authorization: userJson.token
       }
     }).then(response => {
-      console.log(response);
+      // console.log(response);
       const { data } = response.data;
       this.userInfo = data;
     });
