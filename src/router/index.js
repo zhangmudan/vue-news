@@ -24,6 +24,13 @@ const routes = [
     component: () => import('@/views/Column'),
 
   },
+  //搜索新闻
+  {
+    path: '/search',
+    //除了首页之外的都可以懒加载
+    component: () => import('@/views/Search'),
+
+  },
 
   //登录页
   {

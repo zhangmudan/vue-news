@@ -4,7 +4,7 @@
       <div class="logo">
         <i class="iconfont iconnew"></i>
       </div>
-      <router-link class="search" to="#">
+      <router-link class="search" to="/search">
         <div>
           <i class="iconfont iconsearch"></i>
           <span>搜索新闻</span>
