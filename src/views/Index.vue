@@ -16,15 +16,16 @@
     </div>
 
     <!-- tab栏切换 -->
-    <!-- v-model 当前索引值 是唯一的 -->
+    <!-- v-model 当前索引值 是唯一的  sticky粘性布局 swipeable 是否开启手势滑动-->
     <van-tabs v-model="active" sticky swipeable>
+      <!-- 列表组件  @load 加载事件-->
       <van-list v-model="loading" :finished="finished" finished-text="我也是有底线的" @load="onLoad">
-        <van-tab v-for="(item,index) in simulation" :key="index" :title="item">
+        <van-tab v-for="(item,index) in simulation" :key="index" :title="item.name">
           <div>
             <p>
               <Exhibition1 v-for="(item,index) in each" :key="index" />
-              <!-- <Exhibition2 /> -->
-              <!-- <Exhibition3 /> -->
+              <Exhibition2 />
+              <Exhibition3 />
             </p>
           </div>
         </van-tab>
@@ -37,31 +38,33 @@
 //引入组件1
 import Exhibition1 from "@/components/Exhibition1";
 //引入组件2
-// import Exhibition2 from "@/components/Exhibition2";
+import Exhibition2 from "@/components/Exhibition2";
 //引入组件3
-// import Exhibition3 from "@/components/Exhibition3";
+import Exhibition3 from "@/components/Exhibition3";
 export default {
   data() {
     return {
-      simulation: [
-        "关注",
-        "头条",
-        "娱乐",
-        "体育",
-        "汽车",
-        "房产",
-        "关注",
-        "头条",
-        "娱乐",
-        "体育",
-        "汽车",
-        "房产",
-        "∨"
-      ],
+      // simulation: [
+      //   "关注",
+      //   "头条",
+      //   "娱乐",
+      //   "体育",
+      //   "汽车",
+      //   "房产",
+      //   "关注",
+      //   "头条",
+      //   "娱乐",
+      //   "体育",
+      //   "汽车",
+      //   "房产",
+      //   "∨"
+      // ],
+      simulation: [],
       each: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       //绑定当前选中标签的标识符
       active: 0,
       loading: false,
+      // 是否已加载完成，
       finished: false
     };
   },
@@ -75,11 +78,28 @@ export default {
   },
   // 注册组件
   components: {
-    Exhibition1
-    // Exhibition2,
-    // Exhibition3
+    Exhibition1,
+    Exhibition2,
+    Exhibition3
+  },
+  mounted() {
+    this.getSimulation();
   },
   methods: {
+    getSimulation(token) {
+      const config = { url: "/category" };
+      if (token) {
+        config.headers = {
+          Authorization: token
+        };
+      }
+      this.$axios(config).then(res => {
+        console.log(res);
+        const { data } = res.data;
+        data.push({ name: "∨" });
+        this.simulation = data;
+      });
+    },
     onLoad() {
       // 异步更新数据
       // setTimeout 仅做示例，真实场景中一般为 ajax 请求

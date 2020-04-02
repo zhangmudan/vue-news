@@ -1,7 +1,7 @@
 <template>
   <div class="middle">
     <div>
-      <i class="iconfont iconicon-test"></i>
+      <i class="iconfont iconicon-test" @click="$router.back()"></i>
     </div>
     <div class="logo">
       <i class="iconfont iconnew"></i>
