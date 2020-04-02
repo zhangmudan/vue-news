@@ -2,28 +2,23 @@
   <div>
     <div class="imgList">
       <div class="left">
-        <h4>
-          林志玲穿透视黑纱裙米兰看秀
-          腹部微隆显孕味
-          林志玲穿透视黑纱裙米兰看秀
-        </h4>
+        <h4>{{data.title}}</h4>
         <div class="img">
-          <img
-            src="https://img20.360buyimg.com/pop/s590x470_jfs/t1/96873/9/16971/86050/5e81b8b7E155cd831/72e5f13df051f626.jpg.webp"
-            alt
-          />
+          <img :src="$axios.defaults.baseURL+data.cover[0].url" alt />
           <div class="cover">
             <i class="iconfont iconshipin"></i>
           </div>
         </div>
-        <p>火星时报 52跟帖</p>
+        <p>{{data.user.nickname}} {{data.comment_length}}跟帖</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  props: ["data"]
+};
 </script>
 
 <style scoped lang='less'>

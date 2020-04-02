@@ -18,18 +18,28 @@
     <!-- tab栏切换 -->
     <!-- v-model 当前索引值 是唯一的  sticky粘性布局 swipeable 是否开启手势滑动-->
     <van-tabs v-model="active" sticky swipeable>
-      <!-- 列表组件  @load 加载事件-->
-      <van-list v-model="loading" :finished="finished" finished-text="我也是有底线的" @load="onLoad">
-        <van-tab v-for="(item,index) in simulation" :key="index" :title="item.name">
-          <div>
-            <p>
-              <Exhibition1 v-for="(item,index) in each" :key="index" />
-              <Exhibition2 />
-              <Exhibition3 />
-            </p>
-          </div>
-        </van-tab>
-      </van-list>
+      <!-- 下拉刷新 -->
+      <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+        <!-- 列表组件  @load 加载事件 immediate-check 这个属性可以阻止list组件默认就加载一次-->
+        <van-list
+          v-model="simulation[active].loading"
+          :finished="simulation[active].finished"
+          finished-text="我也是有底线的"
+          @load="onLoad"
+          :immediate-check="false"
+        >
+          <van-tab v-for="(item,index) in simulation" :key="index" :title="item.name">
+            <div v-for="(item, index) in simulation[active].posts " :key="index">
+              <Exhibition1
+                v-if="item.type===1&&item.cover.length > 0 && item.cover.length < 3"
+                :data="item"
+              />
+              <Exhibition2 v-if="item.type===1&&item.cover.length > 2" :data="item" />
+              <Exhibition3 v-if="item.type===2 " :data="item" />
+            </div>
+          </van-tab>
+        </van-list>
+      </van-pull-refresh>
     </van-tabs>
   </div>
 </template>
@@ -51,21 +61,18 @@ export default {
       //   "体育",
       //   "汽车",
       //   "房产",
-      //   "关注",
-      //   "头条",
-      //   "娱乐",
-      //   "体育",
-      //   "汽车",
-      //   "房产",
       //   "∨"
       // ],
+      //栏目数据
       simulation: [],
-      each: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      // 记录当前的栏目的id
+      categoryId: 999,
+      // each: [],//文章数据
       //绑定当前选中标签的标识符
       active: 0,
-      loading: false,
-      // 是否已加载完成，
-      finished: false
+      // loading: false, // 是否正在加载中
+      // finished: false, // 是否已加载完成，
+      refreshing: false // 是否正在下拉加载
     };
   },
   watch: {
@@ -73,7 +80,10 @@ export default {
     active() {
       if (this.active === this.simulation.length - 1) {
         this.$router.push("/column");
+        return;
       }
+      //请求不同栏目文章
+      this.getList();
     }
   },
   // 注册组件
@@ -83,9 +93,45 @@ export default {
     Exhibition3
   },
   mounted() {
-    this.getSimulation();
+    //获取本地数据
+    let simulation = JSON.parse(localStorage.getItem("simulation"));
+    //获取本地token
+    let userInfor = JSON.parse(localStorage.getItem("userInfor")) || {};
+    //再次进入页面本地数据存在情况
+    if (simulation) {
+      //登录了但第一条数据不是关注
+      if (simulation[0].name !== "关注" && userInfor.token) {
+        this.getSimulation(userInfor.token);
+      }
+      //没有登录或退出登录但第一条数据是关注
+      if (simulation[0].name === "关注" && !userInfor.token) {
+        this.getSimulation();
+      }
+      this.simulation = simulation;
+      //给数据加上pageIndex=1
+      this.getPageindex();
+      // console.log(this.simulation);
+    } else {
+      // 本地没有数据
+      this.getSimulation(userInfor.token);
+    }
+    //加载文章
+    this.getList();
   },
+
   methods: {
+    // 循环给栏目加上pageIndex，每个栏目都是自己的pageIndex
+    //循环给栏目加上存放文章数据的数组
+    getPageindex() {
+      this.simulation = this.simulation.map(item => {
+        item.pageIndex = 1;
+        item.posts = [];
+        item.loading = false;
+        item.finished = false;
+        return item;
+      });
+    },
+    //请求栏目数据
     getSimulation(token) {
       const config = { url: "/category" };
       if (token) {
@@ -94,28 +140,64 @@ export default {
         };
       }
       this.$axios(config).then(res => {
-        console.log(res);
+        // console.log(res);
         const { data } = res.data;
         data.push({ name: "∨" });
         this.simulation = data;
+        //把数据存到本地
+        localStorage.setItem("simulation", JSON.stringify(data));
+        // 给每个栏目都加上pageIndex = 1
+        this.getPageindex();
       });
     },
+    //加载
     onLoad() {
-      // 异步更新数据
-      // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.each.push(1);
+      //加载下一页
+      this.simulation[this.active].pageIndex += 1;
+      //加载文章
+      this.getList();
+    },
+    //封装加载文章函数
+    getList() {
+      if (this.simulation[this.active].finished) {
+        return;
+      }
+      // 从栏目数据中解构
+      const { pageIndex, id } = this.simulation[this.active];
+      this.$axios({
+        url: "/post",
+        // params就是url问号后面的参数
+        params: {
+          pageIndex: pageIndex, //页数
+          pageSize: 5, //数据条数
+          category: id //数据id
         }
-
+      }).then(res => {
+        // console.log(res);
+        //total 总条数
+        const { data, total } = res.data;
+        //// 把新的文章数据合并到原来的文章列表中
+        // this.each = [...this.each, ...data];
+        // 这里因为active也会导致页面更新
+        this.simulation[this.active].posts = [
+          ...this.simulation[this.active].posts,
+          ...data
+        ];
+        // console.log(this.each);
         // 加载状态结束
-        this.loading = false;
-
-        // 数据全部加载完成
-        if (this.each.length >= 20) {
-          this.finished = true;
+        this.simulation[this.active].loading = false;
+        // 赋值的方式页面才会更新
+        this.simulation = [...this.simulation];
+        //是否最后一页
+        if (this.simulation[this.active].posts.length === total) {
+          this.simulation[this.active].finished = true;
         }
-      }, 1500);
+      });
+    },
+    onRefresh() {
+      // 表示加载完毕
+      this.refreshing = false;
+      console.log("下拉完成");
     }
   }
 };

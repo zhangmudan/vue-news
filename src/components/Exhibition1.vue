@@ -3,20 +3,19 @@
     <div>
       <div class="img">
         <div class="left">
-          <h4>
-            林志玲穿透视黑纱裙米兰看秀
-            腹部微隆显孕味
-          </h4>
-          <p>火星时报 52跟帖</p>
+          <h4>{{data.title}}</h4>
+          <p>{{data.user.nickname}} {{data.comment_length}}跟帖</p>
         </div>
-        <img src="https://www.baidu.com/img/bd_logo1.png" alt />
+        <img :src="$axios.defaults.baseURL+data.cover[0].url" alt />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  props: ["data"]
+};
 </script>
 
 <style scoped lang='less'>

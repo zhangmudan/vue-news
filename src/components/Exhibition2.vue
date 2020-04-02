@@ -2,25 +2,26 @@
   <div>
     <div class="imgList">
       <div class="left">
-        <h4>
-          林志玲穿透视黑纱裙米兰看秀
-          腹部微隆显孕味
-          林志玲穿透视黑纱裙米兰看秀
-        </h4>
-        <p>火星时报 52跟帖</p>
+        <h4>{{data.title}}</h4>
       </div>
 
       <div class="list-img">
-        <img src="https://www.baidu.com/img/bd_logo1.png" alt />
-        <img src="https://www.baidu.com/img/bd_logo1.png" alt />
-        <img src="https://www.baidu.com/img/bd_logo1.png" alt />
+        <img
+          v-for="(item,index) in data.cover"
+          :key="index"
+          :src="$axios.defaults.baseURL + item.url"
+          alt
+        />
       </div>
+      <p>{{data.user.nickname}} {{data.comment_length}}跟帖</p>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  props: ["data"]
+};
 </script>
 
 <style scoped lang='less'>
@@ -54,11 +55,11 @@ export default {};
       /* 控制 列的方向 */
       -webkit-box-orient: vertical;
     }
-    p {
-      font-size: 12/360 * 100vw;
-      color: #666;
-      line-height: 35/360 * 100vw;
-    }
+  }
+  p {
+    font-size: 12/360 * 100vw;
+    color: #666;
+    line-height: 35/360 * 100vw;
   }
 }
 </style>
