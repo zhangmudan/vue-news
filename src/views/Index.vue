@@ -54,20 +54,12 @@ import Exhibition3 from "@/components/Exhibition3";
 export default {
   data() {
     return {
-      // simulation: [
-      //   "关注",
-      //   "头条",
-      //   "娱乐",
-      //   "体育",
-      //   "汽车",
-      //   "房产",
-      //   "∨"
-      // ],
       //栏目数据
       simulation: [],
       // 记录当前的栏目的id
       categoryId: 999,
       // each: [],//文章数据
+      userInfor: {}, //本地数据
       //绑定当前选中标签的标识符
       active: 0,
       // loading: false, // 是否正在加载中
@@ -95,33 +87,35 @@ export default {
   mounted() {
     //获取本地数据
     let simulation = JSON.parse(localStorage.getItem("simulation"));
-    //获取本地token
+    //获取本地数据token 如果没有值就等于一个对象
     let userInfor = JSON.parse(localStorage.getItem("userInfor")) || {};
+
+    this.userInfor = userInfor;
     //再次进入页面本地数据存在情况
     if (simulation) {
       //登录了但第一条数据不是关注
-      if (simulation[0].name !== "关注" && userInfor.token) {
-        this.getSimulation(userInfor.token);
-      }
       //没有登录或退出登录但第一条数据是关注
-      if (simulation[0].name === "关注" && !userInfor.token) {
+      if (
+        (simulation[0].name !== "关注" && userInfor.token) ||
+        (simulation[0].name === "关注" && !userInfor.token)
+      ) {
         this.getSimulation();
+      } else {
+        this.simulation = simulation;
+        //给数据加上pageIndex=1
+        this.getPageindex();
+        // console.log(this.simulation);
       }
-      this.simulation = simulation;
-      //给数据加上pageIndex=1
-      this.getPageindex();
-      // console.log(this.simulation);
     } else {
       // 本地没有数据
-      this.getSimulation(userInfor.token);
+      this.getSimulation();
     }
     //加载文章
     this.getList();
   },
 
   methods: {
-    // 循环给栏目加上pageIndex，每个栏目都是自己的pageIndex
-    //循环给栏目加上存放文章数据的数组
+    // 循环给栏目加上自己的状态
     getPageindex() {
       this.simulation = this.simulation.map(item => {
         item.pageIndex = 1;
@@ -132,11 +126,12 @@ export default {
       });
     },
     //请求栏目数据
-    getSimulation(token) {
+    getSimulation() {
+      //请求配置
       const config = { url: "/category" };
-      if (token) {
+      if (this.userInfor.token) {
         config.headers = {
-          Authorization: token
+          Authorization: this.userInfor.token
         };
       }
       this.$axios(config).then(res => {
@@ -146,7 +141,7 @@ export default {
         this.simulation = data;
         //把数据存到本地
         localStorage.setItem("simulation", JSON.stringify(data));
-        // 给每个栏目都加上pageIndex = 1
+        // 给每个栏目都加上自己的状态
         this.getPageindex();
       });
     },
@@ -159,11 +154,12 @@ export default {
     },
     //封装加载文章函数
     getList() {
-      if (this.simulation[this.active].finished) {
-        return;
-      }
+      const { pageIndex, id, finished } = this.simulation[this.active];
+      //加载完毕后直接结束,不需要请求
+      if (finished) return;
+
       // 从栏目数据中解构
-      const { pageIndex, id } = this.simulation[this.active];
+
       this.$axios({
         url: "/post",
         // params就是url问号后面的参数

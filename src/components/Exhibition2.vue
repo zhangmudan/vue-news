@@ -44,8 +44,8 @@ export default {
     h4 {
       font-size: 15/360 * 100vw;
       font-weight: 500;
-      line-height: 20px;
-      height: 40px;
+      line-height: 20/360 * 100vw;
+      height: 40/360 * 100vw;
       overflow: hidden;
       text-overflow: ellipsis;
       /* 这是一个以前的弹性盒子 */
