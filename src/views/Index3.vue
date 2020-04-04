@@ -3,7 +3,7 @@
     <!-- 红色的头部 -->
     <div class="header">
       <span class="iconfont iconnew"></span>
-      <router-link to="#" class="search">
+      <router-link to="/search" class="search">
         <span class="iconfont iconsearch"></span>
         <i>搜索新闻</i>
       </router-link>
@@ -16,7 +16,7 @@
     <!-- v-model：就是当前的索引值，是唯一的，比较类似于for循环的key -->
     <!-- sticky：是否使用粘性定位布局 -->
     <!-- swipeable: 是否开启手势滑动切换 -->
-    <van-tabs v-model="active" sticky swipeable @scroll="getScroll">
+    <van-tabs v-model="active" sticky swipeable @scroll="getScrollY">
       <van-tab v-for="(item, index) in categories" :key="index" :title="item.name">
         <!-- 下拉刷新 -->
         <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
@@ -33,11 +33,11 @@
             <div v-for="(subItem, subIndex) in item.post" :key="subIndex">
               <!-- 只有单张图片的 -->
               <Exhibition1
+                v-if="(subItem.type === 1 && subItem.cover.length>0||subItem.cover.length<3)"
                 :data="subItem"
-                v-if="subItem.type===1&&subItem.cover.length>0&&subItem.cover.length<3"
               />
-              <Exhibition2 v-if="subItem.type===1&&subItem.cover.length>2" :data="subItem" />
-              <Exhibition3 :data="subItem" v-if="subItem.type===2" />
+              <Exhibition2 v-if="(subItem.type === 1 && subItem.cover.length>2)" :data="subItem" />
+              <Exhibition3 v-if="(subItem.type === 2 )" :data="subItem" />
             </div>
           </van-list>
         </van-pull-refresh>
@@ -57,17 +57,20 @@ import Exhibition3 from "@/components/Exhibition3";
 export default {
   data() {
     return {
-      // 菜单的数据
-      categories: [],
-      // 记录当前tab的切换的索引
-      active: 0,
-      token: "",
-      // 后台返回的数据
-      // list: [],
-      // loading: false, // 是否正在加载中
-      // finished: false, // 是否已经加载完毕
+      categories: [], // 菜单的数据
+      active: 0, // 记录当前tab的切换的索引
+      //   list: [], // 后台返回的数据
+      token: "", //存储本地token
+      //   loading: false, // 是否正在加载中
+      //   finished: false, // 是否已经加载完毕
       refreshing: false // 是否正在下拉加载
     };
+  },
+  //注册组件
+  components: {
+    Exhibition1,
+    Exhibition2,
+    Exhibition3
   },
   // 监听属性
   watch: {
@@ -78,28 +81,23 @@ export default {
         this.$router.push("/column");
       }
       this.getList();
-      //等页面渲染完成后获取滚动距离
+      //需要页面加载完以后再触发,时间随便写
       setTimeout(() => {
+        // 页面滚动到当前栏目下的scrollY值
         window.scrollTo(0, this.categories[this.active].scrollY);
       }, 0);
     }
   },
-  //注册组件
-  components: {
-    Exhibition1,
-    Exhibition2,
-    Exhibition3
-  },
   mounted() {
-    //获取本地token
+    //获取本地存储的token
     const { token } = JSON.parse(localStorage.getItem("userInfor")) || {};
     this.token = token;
     //获取本地存储栏目
     const categories = JSON.parse(localStorage.getItem("categories"));
-    //如果本地有数据
+    //如果存储有数据
     if (categories) {
-      //登录了但不是关注
-      //未登录但是关注
+      //登录了但是第一条数据不是关注
+      //未登录但是第一条数据是关注
       if (
         (categories[0].name !== "关注" && token) ||
         (categories[0].name === "关注" && !token)
@@ -107,31 +105,33 @@ export default {
         this.getCategories();
       } else {
         this.categories = categories;
-        //调用方法给每个栏目加上自己的状态
-        this.getPage();
+        //调用方法添加属性
+        this.getPageindex();
       }
     } else {
       this.getCategories();
     }
   },
   methods: {
-    //每个栏目都有自己的状态
-    getPage() {
-      this.categories = this.categories.map(v => {
-        v.pageIndex = 1;
-        v.post = [];
-        v.loading = false; // 是否正在加载中
-        v.finished = false; // 是否已经加载完毕
-        v.scrollY = 0;
-        return v;
+    //给每个栏目添加自己的状态
+    getPageindex() {
+      this.categories = this.categories.map(item => {
+        item.pageIndex = 1;
+        item.post = [];
+        item.loading = false; // 是否正在加载中
+        item.finished = false; // 是否已经加载完毕
+        item.scrollY = 0;
+        return item;
       });
+      // 请求文章列表数据,是一定要放到栏目处理之后执行；
       this.getList();
+      //   console.log(this.categories);
     },
-    //封装文章接口
+    //封装请求文章接口
     getList() {
+      // 获取当前页数
       const { pageIndex, id, finished, name } = this.categories[this.active];
       if (finished) return;
-
       const config = {
         url: "/post",
         params: {
@@ -140,6 +140,7 @@ export default {
           category: id
         }
       };
+      //如果登录了
       if (name === "关注") {
         config.headers = {
           Authorization: this.token
@@ -152,10 +153,11 @@ export default {
           ...this.categories[this.active].post,
           ...data
         ];
+        //用赋值的方式刷新页面
+        this.categories = [...this.categories];
         // 加载状态结束
         this.categories[this.active].loading = false;
-        //赋值刷新页面
-        this.categories = [...this.categories];
+
         // 数据全部加载完成
         if (this.categories[this.active].post.length === total) {
           this.categories[this.active].finished = true;
@@ -164,11 +166,10 @@ export default {
     },
     //封装栏目接口
     getCategories() {
-      //未登录
       const config = {
         url: "/category"
       };
-      //已登录
+      //如果登录了
       if (this.token) {
         config.headers = {
           Authorization: this.token
@@ -181,20 +182,21 @@ export default {
         this.categories = data;
         //把数据存储到本地
         localStorage.setItem("categories", JSON.stringify(data));
-        //调用方法给每个栏目加上自己的状态
-        this.getPage();
+        //给栏目添加自己的状态
+        this.getPageindex();
       });
     },
+    //获取滚动数据
+    getScrollY(data) {
+      if (this.categories.length === 0) return;
+      const { scrollTop } = data;
+      this.categories[this.active].scrollY = scrollTop;
+    },
     onLoad() {
-      //给加载页面+1
+      //触动加载时,给页面+1
       this.categories[this.active].pageIndex += 1;
       this.getList();
-      // console.log("已经拖动到了底部");
-    },
-    getScroll(data) {
-      const { scrollTop } = data;
-      if (this.categories.length === 0) return;
-      this.categories[this.active].scrollY = scrollTop;
+      //   console.log("已经拖动到了底部");
     },
     onRefresh() {
       // 表示加载完毕
