@@ -3,7 +3,7 @@
     <!-- 红色的头部 -->
     <div class="header">
       <span class="iconfont iconnew"></span>
-      <router-link to="#" class="search">
+      <router-link to="/search" class="search">
         <span class="iconfont iconsearch"></span>
         <i>搜索新闻</i>
       </router-link>
@@ -17,7 +17,12 @@
     <!-- sticky：是否使用粘性定位布局 -->
     <!-- swipeable: 是否开启手势滑动切换 -->
     <van-tabs v-model="active" sticky swipeable @scroll="getScroll">
-      <van-tab v-for="(item, index) in categories" :key="index" :title="item.name">
+      <van-tab
+        v-for="(item, index) in categories"
+        :key="index"
+        :title="item.name"
+        v-if="item.is_top===1||item.name==='∨'"
+      >
         <!-- 下拉刷新 -->
         <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
           <!-- van的列表组件 -->
@@ -73,15 +78,19 @@ export default {
   watch: {
     // 监听tab栏的切换
     active() {
+      // 先过滤出is_top等于1
+      const arr = this.categories.filter(v => {
+        return v.is_top || v.name === "∨";
+      });
       // 判断如果点击的是最后一个图标，跳转到栏目管理页
-      if (this.active === this.categories.length - 1) {
+      if (this.active === arr.length - 1) {
         this.$router.push("/column");
       }
       this.getList();
       //等页面渲染完成后获取滚动距离
       setTimeout(() => {
         window.scrollTo(0, this.categories[this.active].scrollY);
-      }, 0);
+      }, 20);
     }
   },
   //注册组件
@@ -120,16 +129,24 @@ export default {
       this.categories = this.categories.map(v => {
         v.pageIndex = 1;
         v.post = [];
-        v.loading = false; // 是否正在加载中
+        v.loading = false; // 组件的是否正在加载中
         v.finished = false; // 是否已经加载完毕
         v.scrollY = 0;
+        v.isload = false; //自己控制的加载
         return v;
       });
       this.getList();
     },
     //封装文章接口
     getList() {
-      const { pageIndex, id, finished, name } = this.categories[this.active];
+      const { pageIndex, id, finished, name, isload } = this.categories[
+        this.active
+      ];
+      //限制请求次数
+      if (isload) return;
+      this.categories[this.active].isload = true;
+      // //给加载页面+1
+      this.categories[this.active].pageIndex += 1;
       if (finished) return;
 
       const config = {
@@ -160,6 +177,8 @@ export default {
         if (this.categories[this.active].post.length === total) {
           this.categories[this.active].finished = true;
         }
+        //加载完毕后把isload的状态设置为false
+        this.categories[this.active].isload = false;
       });
     },
     //封装栏目接口
@@ -186,8 +205,7 @@ export default {
       });
     },
     onLoad() {
-      //给加载页面+1
-      this.categories[this.active].pageIndex += 1;
+      // this.categories[this.active].pageIndex += 1;
       this.getList();
       // console.log("已经拖动到了底部");
     },
