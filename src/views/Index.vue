@@ -16,6 +16,7 @@
     <!-- v-model：就是当前的索引值，是唯一的，比较类似于for循环的key -->
     <!-- sticky：是否使用粘性定位布局 -->
     <!-- swipeable: 是否开启手势滑动切换 -->
+    <!-- v-if和v-for编译器不让一同使用 所以才会有红色警告 -->
     <van-tabs v-model="active" sticky swipeable @scroll="getScroll">
       <van-tab
         v-for="(item, index) in categories"
@@ -145,7 +146,7 @@ export default {
       //限制请求次数
       if (isload) return;
       this.categories[this.active].isload = true;
-      // //给加载页面+1
+      //给加载页面+1
       this.categories[this.active].pageIndex += 1;
       if (finished) return;
 
@@ -234,7 +235,8 @@ export default {
   color: #fff;
 
   .iconnew {
-    font-size: 20px;
+    font-size: 20/360 * 100vw;
+    //放大
     transform: scale(3);
     position: relative;
     left: 20/360 * 100vw;
@@ -248,18 +250,19 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50px;
-    font-size: 13px;
+    border-radius: 50/360 * 100vw;
+    font-size: 13/360 * 100vw;
     line-height: 1;
     vertical-align: middle;
 
     span {
       margin-right: 5px;
+      font-size: 13/360 * 100vw;
     }
   }
 
   .iconwode {
-    font-size: 20px;
+    font-size: 20/360 * 100vw;
   }
 }
 
@@ -275,7 +278,7 @@ export default {
 
 /deep/ .van-tab:nth-last-child(2) {
   background: #eee;
-  width: 20px !important;
+  width: 20/360 * 100vw !important;
   position: absolute;
   right: 0;
   top: 0;
@@ -283,7 +286,7 @@ export default {
 }
 
 /deep/ .van-tabs__wrap {
-  padding-right: 20px;
+  padding-right: 20/360 * 100vw;
 }
 
 /deep/ .van-tabs__nav {

@@ -17,7 +17,12 @@
     <!-- sticky：是否使用粘性定位布局 -->
     <!-- swipeable: 是否开启手势滑动切换 -->
     <van-tabs v-model="active" sticky swipeable @scroll="getScrollY">
-      <van-tab v-for="(item, index) in categories" :key="index" :title="item.name">
+      <van-tab
+        v-for="(item, index) in categories"
+        :key="index"
+        :title="item.name"
+        v-if="item.is_top===1 || item.name==='∨'"
+      >
         <!-- 下拉刷新 -->
         <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
           <!-- van的列表组件 -->
@@ -76,8 +81,12 @@ export default {
   watch: {
     // 监听tab栏的切换
     active() {
+      //过滤is_top=1的数据
+      const arr = this.categories.filter(v => {
+        return v.is_top === 1 || v.name === "∨";
+      });
       // 判断如果点击的是最后一个图标，跳转到栏目管理页
-      if (this.active === this.categories.length - 1) {
+      if (this.active === arr.length - 1) {
         this.$router.push("/column");
       }
       this.getList();
@@ -121,6 +130,7 @@ export default {
         item.loading = false; // 是否正在加载中
         item.finished = false; // 是否已经加载完毕
         item.scrollY = 0;
+        item.isload = false;
         return item;
       });
       // 请求文章列表数据,是一定要放到栏目处理之后执行；
@@ -130,7 +140,13 @@ export default {
     //封装请求文章接口
     getList() {
       // 获取当前页数
-      const { pageIndex, id, finished, name } = this.categories[this.active];
+      const { pageIndex, id, finished, name, isload } = this.categories[
+        this.active
+      ];
+      if (isload) return;
+      this.categories[this.active].isload = true;
+      //触动加载时,给页面+1
+      this.categories[this.active].pageIndex += 1;
       if (finished) return;
       const config = {
         url: "/post",
@@ -162,6 +178,7 @@ export default {
         if (this.categories[this.active].post.length === total) {
           this.categories[this.active].finished = true;
         }
+        this.categories[this.active].isload = false;
       });
     },
     //封装栏目接口
@@ -193,8 +210,6 @@ export default {
       this.categories[this.active].scrollY = scrollTop;
     },
     onLoad() {
-      //触动加载时,给页面+1
-      this.categories[this.active].pageIndex += 1;
       this.getList();
       //   console.log("已经拖动到了底部");
     },
