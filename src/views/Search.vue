@@ -6,7 +6,7 @@
       <span class="iconfont iconjiantou2" @click="$router.back()"></span>
       <div class="input">
         <i class="iconfont iconsearch"></i>
-        <input type="text" placeholder="通灵兽消失术" v-model="value" @keyup.enter="search" />
+        <input type="text" placeholder="输入关键词" autofocus v-model="value" @keyup.enter="search" />
       </div>
       <span @click="search">搜索</span>
     </div>
@@ -61,12 +61,16 @@ export default {
   },
   methods: {
     search() {
+      if (this.value === "") return;
       // console.log(this.value);
       this.list.unshift(this.value);
       this.list = [...new Set(this.list)];
       localStorage.setItem("history", JSON.stringify(this.list));
-      console.log(this.list);
-
+      // console.log(this.list);
+      this.getList();
+    },
+    //获取文章
+    getList() {
       this.$axios({
         url: "/post_search",
         params: {
@@ -76,13 +80,15 @@ export default {
         }
       }).then(res => {
         this.showLayer = true;
-        console.log(res);
+        // console.log(res);
         const { data } = res.data;
         this.post = data;
       });
     },
+    //点击历史记录
     record(item) {
       this.value = item;
+      this.getList();
     },
     delelit() {
       this.list = [];

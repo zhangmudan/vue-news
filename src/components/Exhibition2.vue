@@ -1,5 +1,5 @@
 <template>
-  <router-link to="/post/data.id">
+  <router-link :to="`/post/${data.id}`">
     <div>
       <div class="imgList">
         <div class="left">

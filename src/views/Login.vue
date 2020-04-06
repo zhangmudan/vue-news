@@ -71,8 +71,11 @@ export default {
         this.$toast.success(message);
         //把token和id保存到本地 localStorage只能保存字符串
         localStorage.setItem("userInfor", JSON.stringify(data));
-        //跳转到个人中心页
-        this.$router.push("/personal");
+
+        // 判断地址栏有没有return_url参数，
+        const { return_url } = this.$route.query;
+        // 有的话就跳转到这个路径，没有就跳转个人中心
+        this.$router.replace(return_url || "/personal");
       });
     },
     register() {
