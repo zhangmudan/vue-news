@@ -1,15 +1,17 @@
 <template>
-  <div>
+  <router-link to="/post/data.id">
     <div>
-      <div class="img">
-        <div class="left">
-          <h4>{{data.title}}</h4>
-          <p>{{data.user.nickname}} {{data.comment_length}}跟帖</p>
+      <div>
+        <div class="img">
+          <div class="left">
+            <h4>{{data.title}}</h4>
+            <p>{{data.user.nickname}} {{data.comment_length}}跟帖</p>
+          </div>
+          <img :src="$axios.defaults.baseURL+data.cover[0].url" alt />
         </div>
-        <img :src="$axios.defaults.baseURL+data.cover[0].url" alt />
       </div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script>

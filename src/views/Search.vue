@@ -6,62 +6,97 @@
       <span class="iconfont iconjiantou2" @click="$router.back()"></span>
       <div class="input">
         <i class="iconfont iconsearch"></i>
-        <input type="text" placeholder="通灵兽消失术" />
+        <input type="text" placeholder="通灵兽消失术" v-model="value" @keyup.enter="search" />
       </div>
-      <span>搜索</span>
+      <span @click="search">搜索</span>
     </div>
     <!-- 历史记录 -->
     <div class="historic">
       <div class="title">
         <strong>历史记录</strong>
-        <i class="iconfont iconicon-test"></i>
+        <i class="iconfont iconicon-test" @click="delelit"></i>
       </div>
       <div class="record">
-        <div class="record_item">
-          <span>美女</span>
-          <i></i>
-        </div>
-        <div class="record_item">
-          <span>搜索办公室小野否认解散办公室小野否认解散美女记录</span>
-          <i></i>
-        </div>
-        <div class="record_item">
-          <span>美女搜索记录</span>
+        <div class="record_item" v-for="(item,index) in list" :key="index">
+          <span @click="record(item)">{{item}}</span>
           <i></i>
         </div>
       </div>
     </div>
     <!-- 浮层 -->
-    <div class="Floating_layer">
-      <div class="layer_item">
-        <span>搜索记录</span>
-        <i class="iconfont iconjiantou1"></i>
+    <div class="Floating_layer" v-if="showLayer">
+      <!--后台返回的数组 -->
+      <div v-for="(item, index) in post" :key="index">
+        <!-- 只有单张图片的 -->
+        <Exhibition1 :data="item" v-if="item.type===1&&item.cover.length>0&&item.cover.length<3" />
+        <Exhibition2 v-if="item.type===1&&item.cover.length>2" :data="item" />
+        <Exhibition3 :data="item" v-if="item.type===2" />
       </div>
-      <div class="layer_item">
-        <span>搜索记录</span>
-        <i class="iconfont iconjiantou1"></i>
-      </div>
-      <div class="layer_item">
-        <span>搜索记录办公室小野否认解散办公室小野否认解散办公室小野否认解散</span>
-        <i class="iconfont iconjiantou1"></i>
-      </div>
-      <div class="layer_item">
-        <span>搜索记录</span>
-        <i class="iconfont iconjiantou1"></i>
-      </div>
-    </div>
-    <!-- 热门搜索 -->
-    <div class="hot">
-      <h5>热门搜索</h5>
-      <p>办公室小野否认解散</p>
-      <p>办公室小野否认解散</p>
-      <p>办公室小野否认解散</p>
+      <div class="empty" v-if="post.length===0">搜索不到你要的内容</div>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+//引入组件1
+import Exhibition1 from "@/components/Exhibition1";
+//引入组件2
+import Exhibition2 from "@/components/Exhibition2";
+//引入组件3
+import Exhibition3 from "@/components/Exhibition3";
+export default {
+  data() {
+    return {
+      value: "",
+      list: JSON.parse(localStorage.getItem("history")) || [],
+      showLayer: false,
+      post: []
+    };
+  },
+  //注册组件
+  components: {
+    Exhibition1,
+    Exhibition2,
+    Exhibition3
+  },
+  methods: {
+    search() {
+      // console.log(this.value);
+      this.list.unshift(this.value);
+      this.list = [...new Set(this.list)];
+      localStorage.setItem("history", JSON.stringify(this.list));
+      console.log(this.list);
+
+      this.$axios({
+        url: "/post_search",
+        params: {
+          keyword: this.value,
+          pageIndex: 1,
+          pageSize: 5
+        }
+      }).then(res => {
+        this.showLayer = true;
+        console.log(res);
+        const { data } = res.data;
+        this.post = data;
+      });
+    },
+    record(item) {
+      this.value = item;
+    },
+    delelit() {
+      this.list = [];
+      localStorage.removeItem("history");
+    }
+  },
+  watch: {
+    value() {
+      if (this.value === "") {
+        this.showLayer = false;
+      }
+    }
+  }
+};
 </script>
 
 <style lang='less' scoped>
@@ -100,7 +135,6 @@ export default {};
 }
 .historic {
   margin: 0 15/360 * 100vw;
-  border-bottom: 1px solid #ccc;
   .title {
     display: flex;
     justify-content: space-between;
@@ -133,30 +167,10 @@ export default {};
   width: 100%;
   background-color: #fff;
   overflow-y: auto;
-  padding: 0 15/360 * 100vw;
-  display: none;
-  .layer_item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px;
-    font-size: 12/360 * 100vw;
-    span {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-}
-.hot {
-  margin: 0 15/360 * 100vw;
-  h5 {
-    margin: 15/360 * 100vw 0;
-    font-size: 13/360 * 100vw;
-  }
-  p {
-    margin-bottom: 15/360 * 100vw;
-    font-size: 12/360 * 100vw;
+  .empty {
+    margin: 15/360 * 100vw;
+    font-size: 14/360 * 100vw;
+    color: #999;
   }
 }
 </style>

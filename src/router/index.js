@@ -31,6 +31,13 @@ const routes = [
     component: () => import('@/views/Search'),
 
   },
+  //文章页面
+  {
+    path: '/post/:id',
+    //除了首页之外的都可以懒加载
+    component: () => import('@/views/Post'),
+
+  },
 
   //登录页
   {
