@@ -61,9 +61,15 @@ export default {
     this.token = token;
     const { id } = this.$route.params;
     // console.log(id);
-    this.$axios({
+    const config = {
       url: "/post/" + id
-    }).then(res => {
+    };
+    if (token) {
+      config.headers = {
+        Authorization: token
+      };
+    }
+    this.$axios(config).then(res => {
       // console.log(res);
       const { data } = res.data;
       this.postList = data;
@@ -73,15 +79,25 @@ export default {
   methods: {
     //关注
     follows() {
+      let url = "";
+      if (this.postList.has_follow) {
+        //取消关注
+        url = "/user_unfollow/" + this.postList.user.id;
+      } else {
+        //关注
+        url = "/user_follows/" + this.postList.user.id;
+      }
       this.$axios({
-        url: "/user_follows/" + this.postList.user.id,
+        url,
         headers: {
           Authorization: this.token
         }
       }).then(res => {
         // console.log(res);
-        this.postList.has_follow = true;
-        this.$toast.success("关注成功");
+        this.postList.has_follow = !this.postList.has_follow;
+        this.$toast.success(
+          this.postList.has_follow ? "关注成功" : "取消关注成功"
+        );
       });
     },
     //收藏
@@ -93,11 +109,11 @@ export default {
         }
       }).then(res => {
         // console.log(res);
-        this.postList.has_star = true;
-        this.$toast.success("收藏成功");
+        this.postList.has_star = !this.postList.has_star;
+        this.$toast.success(res.data.message);
       });
     },
-    //点赞
+    //点赞与取消点赞是同一接口
     getLike() {
       this.$axios({
         url: "/post_like/" + this.postList.id,
@@ -106,8 +122,13 @@ export default {
         }
       }).then(res => {
         // console.log(res);
-        this.postList.has_like = true;
-        this.$toast.success("点赞成功");
+        this.postList.has_like = !this.postList.has_like;
+        if (this.postList.has_like) {
+          this.postList.like_length += 1;
+        } else {
+          this.postList.like_length -= 1;
+        }
+        this.$toast.success(res.data.message);
       });
     }
   }

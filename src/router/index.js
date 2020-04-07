@@ -38,6 +38,13 @@ const routes = [
     component: () => import('@/views/Post'),
 
   },
+  //文章页面
+  {
+    path: '/video/:id',
+    //除了首页之外的都可以懒加载
+    component: () => import('@/views/Video'),
+
+  },
 
   //登录页
   {

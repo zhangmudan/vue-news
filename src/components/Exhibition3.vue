@@ -1,18 +1,20 @@
 <template>
-  <div>
-    <div class="imgList">
-      <div class="left">
-        <h4>{{data.title}}</h4>
-        <div class="img">
-          <img :src="$axios.defaults.baseURL+data.cover[0].url" alt />
-          <div class="cover">
-            <i class="iconfont iconshipin"></i>
+  <router-link :to="`/video/${data.id}`">
+    <div>
+      <div class="imgList">
+        <div class="left">
+          <h4>{{data.title}}</h4>
+          <div class="img">
+            <img :src="$axios.defaults.baseURL+data.cover[0].url" alt />
+            <div class="cover">
+              <i class="iconfont iconshipin"></i>
+            </div>
           </div>
+          <p>{{data.user.nickname}} {{data.comment_length}}跟帖</p>
         </div>
-        <p>{{data.user.nickname}} {{data.comment_length}}跟帖</p>
       </div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script>

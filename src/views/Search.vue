@@ -45,6 +45,7 @@ import Exhibition2 from "@/components/Exhibition2";
 //引入组件3
 import Exhibition3 from "@/components/Exhibition3";
 export default {
+  name: "search",
   data() {
     return {
       value: "",
@@ -53,6 +54,7 @@ export default {
       post: []
     };
   },
+
   //注册组件
   components: {
     Exhibition1,
@@ -101,6 +103,23 @@ export default {
         this.showLayer = false;
       }
     }
+  },
+  // 添加路由的守卫
+  // to: 代表你即将要访问的页面
+  // from：代表你即将要离开的页面
+  // next：必须要调用，next就类似于你nodejs的中间件，调用才会加载后面的内容
+  // beforeRouteEnter 守卫 不能 访问 this
+  beforeRouteEnter(to, from, next) {
+    // 通过 `vm` 访问组件实例, vm就是this
+    next(vm => {
+      // 如果是从首页进来的，就把数据初始化
+      if (from.path === "/") {
+        // 隐藏浮层
+        vm.showLayer = false;
+        // 清空关键字
+        vm.value = "";
+      }
+    });
   }
 };
 </script>

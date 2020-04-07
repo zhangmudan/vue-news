@@ -61,6 +61,8 @@ import Exhibition2 from "@/components/Exhibition2";
 import Exhibition3 from "@/components/Exhibition3";
 
 export default {
+  //添加name值用于keep-alive中缓存
+  name: "index",
   data() {
     return {
       // 菜单的数据
