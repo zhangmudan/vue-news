@@ -58,7 +58,7 @@ export default {
       this.categories[this.categories.length - 1]
     ];
     localStorage.setItem("categories", JSON.stringify(this.categories));
-    console.log(this.categories);
+    // console.log(this.categories);
   },
   methods: {
     //点击栏目删除

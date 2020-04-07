@@ -113,7 +113,7 @@ export default {
     // 通过 `vm` 访问组件实例, vm就是this
     next(vm => {
       // 如果是从首页进来的，就把数据初始化
-      if (from.path === "/") {
+      if (from.path === "/index") {
         // 隐藏浮层
         vm.showLayer = false;
         // 清空关键字

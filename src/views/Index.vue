@@ -63,6 +63,23 @@ import Exhibition3 from "@/components/Exhibition3";
 export default {
   //添加name值用于keep-alive中缓存
   name: "index",
+  // 添加路由守卫
+  // to: 代表你即将要访问的页面
+  // from：代表你即将要离开的页面
+  // next：必须要调用，next就类似于你nodejs的中间件，调用才会加载后面的内容
+  // beforeRouteEnter 守卫 不能 访问 this
+  beforeRouteEnter(to, from, next) {
+    // 通过 `vm` 访问组件实例, vm就是this
+    next(vm => {
+      // 如果是从栏目管理也进来的，就把数据初始化
+      if (from.path === "/column") {
+        //强制刷新页面
+        vm.$router.go(0);
+      } else {
+        next();
+      }
+    });
+  },
   data() {
     return {
       // 菜单的数据
@@ -85,11 +102,15 @@ export default {
       const arr = this.categories.filter(v => {
         return v.is_top || v.name === "∨";
       });
+      console.log(arr);
+
       // 判断如果点击的是最后一个图标，跳转到栏目管理页
       if (this.active === arr.length - 1) {
         this.$router.push("/column");
+      } else {
+        this.getList();
       }
-      this.getList();
+
       //等页面渲染完成后获取滚动距离
       setTimeout(() => {
         window.scrollTo(0, this.categories[this.active].scrollY);

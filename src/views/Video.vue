@@ -1,17 +1,27 @@
 <template>
   <div>
-    <video
-      controls
-      src="http://cdn.cnbj1.fds.api.mi-img.com/mi-mall/5b4e96b891e985e5c60d6e91eab9eaea.mp4"
-      class="video"
-    >您的浏览器不支持 video 标签。</video>
+    <!-- 头部 -->
+    <div class="header">
+      <div class="left">
+        <i class="iconfont iconjiantou2" @click="$router.back()"></i>
+        <i class="iconfont iconnew"></i>
+      </div>
+      <div
+        class="follow"
+        :class="postList.has_follow?'':'active'"
+        @click="follows"
+      >{{postList.has_follow?'已关注':'关注'}}</div>
+    </div>
+    <!-- 视频 -->
+    <video controls :src="$axios.defaults.baseURL+postList.content" class="video">您的浏览器不支持 video 标签。</video>
+    <!-- 主体 -->
     <div class="main">
       <p>
         <img src="https://img.yzcdn.cn/vant/leaf.jpg" alt />
-        {{postList.user.nickname}}
+        <span>{{postList.user.nickname}}</span>
       </p>
 
-      <div class="content" v-html="postList.content"></div>
+      <div class="title">{{postList.title}}</div>
       <div class="icon">
         <div class="iconzan" @click="getLike">
           <i class="iconfont icondianzan"></i>
@@ -23,10 +33,14 @@
         </div>
       </div>
     </div>
+    <!-- 底部 -->
+    <Footer :postList="postList" />
   </div>
 </template>
 
 <script>
+//引入组件
+import Footer from "@/components/Footer";
 export default {
   data() {
     return {
@@ -34,6 +48,9 @@ export default {
         user: {}
       }
     };
+  },
+  components: {
+    Footer
   },
   mounted() {
     const { token } = JSON.parse(localStorage.getItem("userInfor")) || {};
@@ -54,40 +71,157 @@ export default {
       this.postList = data;
       // console.log(this.postList);
     });
+  },
+  methods: {
+    //关注
+    follows() {
+      let url = "";
+      if (this.postList.has_follow) {
+        //取消关注
+        url = "/user_unfollow/" + this.postList.user.id;
+      } else {
+        //关注
+        url = "/user_follows/" + this.postList.user.id;
+      }
+      this.$axios({
+        url,
+        headers: {
+          Authorization: this.token
+        }
+      }).then(res => {
+        // console.log(res);
+        this.postList.has_follow = !this.postList.has_follow;
+        this.$toast.success(
+          this.postList.has_follow ? "关注成功" : "取消关注成功"
+        );
+      });
+    },
+    //收藏
+    collection() {
+      this.$axios({
+        url: "/post_star/" + this.postList.id,
+        headers: {
+          Authorization: this.token
+        }
+      }).then(res => {
+        // console.log(res);
+        this.postList.has_star = !this.postList.has_star;
+        this.$toast.success(res.data.message);
+      });
+    },
+    //点赞与取消点赞是同一接口
+    getLike() {
+      this.$axios({
+        url: "/post_like/" + this.postList.id,
+        headers: {
+          Authorization: this.token
+        }
+      }).then(res => {
+        // console.log(res);
+        this.postList.has_like = !this.postList.has_like;
+        if (this.postList.has_like) {
+          this.postList.like_length += 1;
+        } else {
+          this.postList.like_length -= 1;
+        }
+        this.$toast.success(res.data.message);
+      });
+    }
   }
 };
 </script>
 
 <style lang='less' scoped>
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 15/360 * 100vw;
+  .left {
+    display: flex;
+    align-items: center;
+    .iconnew {
+      font-size: 54/360 * 100vw;
+      margin: 0 3px;
+    }
+  }
+  .follow {
+    width: 62/360 * 100vw;
+    height: 26/360 * 100vw;
+    line-height: 26/360 * 100vw;
+    color: #000;
+    text-align: center;
+    font-size: 12/360 * 100vw;
+    border-radius: 13/360 * 100vw;
+    border: 1px solid #888;
+  }
+  .active {
+    background-color: #ff0000;
+    color: #fff;
+    border: 1px solid #ff0000;
+  }
+}
 .video {
   width: 100%;
 }
 .main {
   padding: 0 15/360 * 100vw;
-  border-bottom: 5px solid #ddd;
+
   margin-bottom: 100/360 * 100vw;
 
-  .icon {
+  p {
     display: flex;
-    justify-content: space-around;
-    margin-bottom: 20/360 * 100vw;
-    .iconzan,
-    .iconwei {
-      width: 80/360 * 100vw;
-      height: 28/360 * 100vw;
-      line-height: 28/360 * 100vw;
-      text-align: center;
-      border: 1px solid #000;
-      border-radius: 14/360 * 100vw;
-      font-size: 12/360 * 100vw;
+    align-items: center;
+    margin: 10/360 * 100vw 0 15/360 * 100vw;
+    font-size: 12/360 * 100vw;
+    img {
+      display: block;
+      width: 25/360 * 100vw;
+      height: 25/360 * 100vw;
+      border-radius: 50%;
+      margin-right: 10/360 * 100vw;
     }
-    .icondianzan {
-      margin-right: 8/360 * 100vw;
-    }
-    .iconweixin {
-      color: #00d300;
-      margin-right: 8/360 * 100vw;
-    }
+  }
+  .follow {
+    width: 62/360 * 100vw;
+    height: 26/360 * 100vw;
+    line-height: 26/360 * 100vw;
+    color: #000;
+    text-align: center;
+    font-size: 12/360 * 100vw;
+    border-radius: 13/360 * 100vw;
+    border: 1px solid #888;
+  }
+  .active {
+    background-color: #ff0000;
+    color: #fff;
+    border: 1px solid #ff0000;
+  }
+}
+
+.title {
+  font-size: 14/360 * 100vw;
+  margin-bottom: 40/360 * 100vw;
+}
+.icon {
+  display: flex;
+  justify-content: space-around;
+  .iconzan,
+  .iconwei {
+    width: 80/360 * 100vw;
+    height: 28/360 * 100vw;
+    line-height: 28/360 * 100vw;
+    text-align: center;
+    border: 1px solid #000;
+    border-radius: 14/360 * 100vw;
+    font-size: 12/360 * 100vw;
+  }
+  .icondianzan {
+    margin-right: 8/360 * 100vw;
+  }
+  .iconweixin {
+    color: #00d300;
+    margin-right: 8/360 * 100vw;
   }
 }
 </style>

@@ -28,24 +28,15 @@
         </div>
       </div>
     </div>
-    <div class="footer">
-      <div class="foot">
-        <input type="text" placeholder="发表评论" />
-
-        <div class="comment">
-          <i class="iconfont iconpinglun-"></i>
-          <em>{{postList.comment_length}}</em>
-        </div>
-        <i class="iconfont iconshoucang" :class="postList.has_star?'active':''" @click="collection"></i>
-        <i class="iconfont iconfenxiang"></i>
-      </div>
-    </div>
+    <Footer :postList="postList" />
   </div>
 </template>
 
 <script>
 //引入时间插件
 import moment from "moment";
+//引入组件
+import Footer from "@/components/Footer";
 export default {
   data() {
     return {
@@ -55,6 +46,9 @@ export default {
       moment,
       token: ""
     };
+  },
+  components: {
+    Footer
   },
   mounted() {
     const { token } = JSON.parse(localStorage.getItem("userInfor")) || {};
@@ -203,51 +197,6 @@ export default {
     .iconweixin {
       color: #00d300;
       margin-right: 8/360 * 100vw;
-    }
-  }
-}
-.footer {
-  position: fixed;
-  display: flex;
-  bottom: 0;
-  width: 100%;
-  background: #eee;
-  .foot {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20/360 * 100vw;
-    width: 100%;
-    .active {
-      color: #ff0000;
-    }
-    input {
-      height: 30/360 * 100vw;
-      padding-left: 20/360 * 100vw;
-      background: #d7d7d7;
-      border: 0;
-      font-size: 12/360 * 100vw;
-      border-radius: 15/360 * 100vw;
-    }
-
-    i {
-      font-size: 20/360 * 100vw;
-    }
-    .comment {
-      position: relative;
-      em {
-        position: absolute;
-        top: -8/360 * 100vw;
-        left: 13/360 * 100vw;
-        background: #ff0000;
-        color: #fff;
-        height: 14/360 * 100vw;
-        width: 30/360 * 100vw;
-        line-height: 14/360 * 100vw;
-        text-align: center;
-        font-size: 8/360 * 100vw;
-        border-radius: 7/360 * 100vw;
-      }
     }
   }
 }
