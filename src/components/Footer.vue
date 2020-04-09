@@ -3,10 +3,11 @@
     <div class="foot">
       <input type="text" placeholder="发表评论" />
 
-      <div class="comment">
+      <router-link :to="`/post-comment/${postList.id}`" class="comment">
         <i class="iconfont iconpinglun-"></i>
         <em>{{postList.comment_length}}</em>
-      </div>
+      </router-link>
+
       <i class="iconfont iconshoucang" :class="postList.has_star?'active':''" @click="collection"></i>
       <i class="iconfont iconfenxiang"></i>
     </div>

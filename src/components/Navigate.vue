@@ -22,7 +22,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   line-height: 48/360 * 100vw;
-  padding: 0 20/360 * 100vw;
+  padding: 0 15/360 * 100vw;
   span {
     font-size: 20/360 * 100vw;
   }

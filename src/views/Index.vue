@@ -71,10 +71,12 @@ export default {
   beforeRouteEnter(to, from, next) {
     // 通过 `vm` 访问组件实例, vm就是this
     next(vm => {
-      // 如果是从栏目管理也进来的，就把数据初始化
+      // 如果是从栏目管理页进来的，就把数据初始化
       if (from.path === "/column") {
         //强制刷新页面
-        vm.$router.go(0);
+        // vm.$router.go(0);
+        // 初始化active回到第一个栏目
+        vm.active = 0;
       } else {
         next();
       }
@@ -123,6 +125,10 @@ export default {
     Exhibition2,
     Exhibition3
   },
+  //activated 只对keep-alive的组件有用,当组件每次被渲染的时候才会执行
+  // activated(){//初始化active回到第一个栏目
+  // this.active = 0;}
+  //mounted 只会执行一次
   mounted() {
     //获取本地token
     const { token } = JSON.parse(localStorage.getItem("userInfor")) || {};
