@@ -69,18 +69,19 @@ export default {
   // next：必须要调用，next就类似于你nodejs的中间件，调用才会加载后面的内容
   // beforeRouteEnter 守卫 不能 访问 this
   beforeRouteEnter(to, from, next) {
-    // 通过 `vm` 访问组件实例, vm就是this
-    next(vm => {
-      // 如果是从栏目管理页进来的，就把数据初始化
-      if (from.path === "/column") {
+    // 如果是从栏目管理页进来的，就把数据初始化
+    if (from.path === "/column") {
+      // 通过 `vm` 访问组件实例, vm就是this
+      next(vm => {
         //强制刷新页面
         // vm.$router.go(0);
         // 初始化active回到第一个栏目
         vm.active = 0;
-      } else {
-        next();
-      }
-    });
+        vm.roude();
+      });
+    } else {
+      next();
+    }
   },
   data() {
     return {
@@ -104,7 +105,7 @@ export default {
       const arr = this.categories.filter(v => {
         return v.is_top || v.name === "∨";
       });
-      console.log(arr);
+      // console.log(arr);
 
       // 判断如果点击的是最后一个图标，跳转到栏目管理页
       if (this.active === arr.length - 1) {
@@ -130,30 +131,34 @@ export default {
   // this.active = 0;}
   //mounted 只会执行一次
   mounted() {
-    //获取本地token
-    const { token } = JSON.parse(localStorage.getItem("userInfor")) || {};
-    this.token = token;
-    //获取本地存储栏目
-    const categories = JSON.parse(localStorage.getItem("categories"));
-    //如果本地有数据
-    if (categories) {
-      //登录了但不是关注
-      //未登录但是关注
-      if (
-        (categories[0].name !== "关注" && token) ||
-        (categories[0].name === "关注" && !token)
-      ) {
-        this.getCategories();
-      } else {
-        this.categories = categories;
-        //调用方法给每个栏目加上自己的状态
-        this.getPage();
-      }
-    } else {
-      this.getCategories();
-    }
+    this.roude();
   },
   methods: {
+    //加载栏目
+    roude() {
+      //获取本地token
+      const { token } = JSON.parse(localStorage.getItem("userInfor")) || {};
+      this.token = token;
+      //获取本地存储栏目
+      const categories = JSON.parse(localStorage.getItem("categories"));
+      //如果本地有数据
+      if (categories) {
+        //登录了但不是关注
+        //未登录但是关注
+        if (
+          (categories[0].name !== "关注" && token) ||
+          (categories[0].name === "关注" && !token)
+        ) {
+          this.getCategories();
+        } else {
+          this.categories = categories;
+          //调用方法给每个栏目加上自己的状态
+          this.getPage();
+        }
+      } else {
+        this.getCategories();
+      }
+    },
     //每个栏目都有自己的状态
     getPage() {
       this.categories = this.categories.map(v => {

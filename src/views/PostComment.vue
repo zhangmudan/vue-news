@@ -19,9 +19,9 @@
                 <p class="time">{{moment(item.user.create_date).fromNow()}}</p>
               </div>
             </div>
-            <div class="reply" @click="reply(item)">回复</div>
+            <div class="reply" @click="handleReply(item)">回复</div>
           </div>
-          <CommentFloor v-if="item.parent" :data="item" />
+          <CommentFloor v-if="item.parent" :data="item" @replyFloor="handleReply" />
           <div class="content">
             <p>{{item.content}}</p>
           </div>
@@ -38,8 +38,10 @@
         class="textarea"
         @focus="focus"
         @blur="blur"
+        @keyup.enter="submit"
         :isFocus="false"
         :class="isFocus?'active':''"
+        ref="textarea"
       />
       <span class="submit" v-if="isFocus" @click="submit">发布</span>
     </div>
@@ -115,12 +117,12 @@ export default {
     },
     //失焦收起输入框
     blur() {
-      //设置延时在点击发送的时候才不会立刻收起
+      // 失去焦点时候，不要立马就隐藏发布按钮，需要在按钮点击之后再隐藏
       setTimeout(() => {
         this.isFocus = false;
         //失去焦点是如果输入框为空,把回复的人清空
         if (this.message.trim() === "") {
-          this.reply = {};
+          this.list_item = {};
         }
       }, 200);
     },
@@ -128,28 +130,37 @@ export default {
     submit() {
       if (this.message.trim() == "") return;
       const { token } = JSON.parse(localStorage.getItem("userInfor")) || {};
+      const data = {
+        content: this.message
+      };
+      if (this.list_item.id) {
+        data.parent_id = this.list_item.id;
+      }
       this.$axios({
         url: "/post_comment/" + this.id,
         headers: {
           Authorization: token
         },
-        method: "POST",
-        data: {
-          content: this.message
-        }
+        data,
+        method: "POST"
       }).then(res => {
         this.message = "";
         this.$toast.success(res.data.message);
         this.list = [];
         this.pageIndex = 1;
         this.getList();
+        // 清空回复的数据
+        this.reply = {};
       });
     },
     //回复
-    reply(item) {
+    handleReply(item) {
+      // 因为点击时候失去焦点，已经触发了blur事件
       setTimeout(() => {
         this.list_item = item;
-        console.log(this.list_item);
+        this.isFocus = true;
+        // 输入框获得焦点
+        this.$refs.textarea.focus();
       }, 200);
     }
   }

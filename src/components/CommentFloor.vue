@@ -1,7 +1,7 @@
 <template>
   <div class="floor">
     <div class="user-floor">
-      <CommentFloor v-if="data.parent" :data="data.parent" />
+      <CommentFloor v-if="data.parent" :data="data.parent" @replyFloor="handleReply" />
       <div class="user-info">
         <div class="info">
           <img :src="$axios.defaults.baseURL+data.user.head_img" alt />
@@ -10,7 +10,7 @@
             <p class="time">{{moment(data.user.create_date).fromNow()}}</p>
           </div>
         </div>
-        <div class="reply">回复</div>
+        <div class="reply" @click="handleReply(data)">回复</div>
       </div>
       <div class="floor-content">
         <p>{{data.content}}</p>
@@ -30,6 +30,11 @@ export default {
     return {
       moment
     };
+  },
+  methods: {
+    handleReply(data) {
+      this.$emit("replyFloor", data);
+    }
   }
 };
 </script>

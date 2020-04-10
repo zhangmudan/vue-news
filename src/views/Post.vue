@@ -66,6 +66,10 @@ export default {
     this.$axios(config).then(res => {
       // console.log(res);
       const { data } = res.data;
+      data.content = data.content.replace(
+        /http:\/\/localhost:3000/gi,
+        this.$axios.defaults.baseURL
+      );
       this.postList = data;
       // console.log(this.postList);
     });
