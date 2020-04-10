@@ -19,7 +19,7 @@
                 <p class="time">{{moment(item.user.create_date).fromNow()}}</p>
               </div>
             </div>
-            <div class="reply">回复</div>
+            <div class="reply" @click="reply(item)">回复</div>
           </div>
           <CommentFloor v-if="item.parent" :data="item" />
           <div class="content">
@@ -34,14 +34,14 @@
         :rows="rows"
         :autosize="!isFocus"
         type="textarea"
-        placeholder="说点什么吧..."
+        :placeholder="list_item.user?`回复:@`+list_item.user.nickname:'说点什么吧...'"
         class="textarea"
         @focus="focus"
         @blur="blur"
         :isFocus="false"
         :class="isFocus?'active':''"
       />
-      <span class="submit" v-if="isFocus">发布</span>
+      <span class="submit" v-if="isFocus" @click="submit">发布</span>
     </div>
   </div>
 </template>
@@ -70,7 +70,9 @@ export default {
       message: "",
       rows: 1,
       //记录是否聚焦
-      isFocus: false
+      isFocus: false,
+      //回复对象
+      list_item: {}
     };
   },
   components: {
@@ -107,11 +109,48 @@ export default {
     onLoad() {
       this.getList();
     },
+    //聚焦弹起输入框
     focus() {
       this.isFocus = true;
     },
+    //失焦收起输入框
     blur() {
-      this.isFocus = false;
+      //设置延时在点击发送的时候才不会立刻收起
+      setTimeout(() => {
+        this.isFocus = false;
+        //失去焦点是如果输入框为空,把回复的人清空
+        if (this.message.trim() === "") {
+          this.reply = {};
+        }
+      }, 200);
+    },
+    //点击发布
+    submit() {
+      if (this.message.trim() == "") return;
+      const { token } = JSON.parse(localStorage.getItem("userInfor")) || {};
+      this.$axios({
+        url: "/post_comment/" + this.id,
+        headers: {
+          Authorization: token
+        },
+        method: "POST",
+        data: {
+          content: this.message
+        }
+      }).then(res => {
+        this.message = "";
+        this.$toast.success(res.data.message);
+        this.list = [];
+        this.pageIndex = 1;
+        this.getList();
+      });
+    },
+    //回复
+    reply(item) {
+      setTimeout(() => {
+        this.list_item = item;
+        console.log(this.list_item);
+      }, 200);
     }
   }
 };
