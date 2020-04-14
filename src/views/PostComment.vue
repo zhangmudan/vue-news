@@ -16,7 +16,7 @@
               <div class="info">
                 <p>{{item.user.nickname}}</p>
                 <!-- moment().fromNow 就是显示距离到当前的时间 -->
-                <p class="time">{{moment(item.user.create_date).fromNow()}}</p>
+                <p class="time">{{moment(item.create_date).fromNow()}}</p>
               </div>
             </div>
             <div class="reply" @click="handleReply(item)">回复</div>

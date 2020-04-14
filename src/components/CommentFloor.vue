@@ -7,7 +7,7 @@
           <img :src="$axios.defaults.baseURL+data.user.head_img" alt />
           <div>
             <p>{{data.user.nickname}}</p>
-            <p class="time">{{moment(data.user.create_date).fromNow()}}</p>
+            <p class="time">{{moment(data.create_date).fromNow()}}</p>
           </div>
         </div>
         <div class="reply" @click="handleReply(data)">回复</div>
