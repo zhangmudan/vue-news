@@ -77,7 +77,7 @@ export default {
         // vm.$router.go(0);
         // 初始化active回到第一个栏目
         vm.active = 0;
-        vm.roude();
+        vm.rolode();
       });
     } else {
       next();
@@ -131,11 +131,11 @@ export default {
   // this.active = 0;}
   //mounted 只会执行一次
   mounted() {
-    this.roude();
+    this.rolode();
   },
   methods: {
     //加载栏目
-    roude() {
+    rolode() {
       //获取本地token
       const { token } = JSON.parse(localStorage.getItem("userInfor")) || {};
       this.token = token;

@@ -13,7 +13,7 @@ let app;
 // 绑定到原型,加上以后可以在组件中通过this.$axios来调用
 Vue.prototype.$axios = axios;
 //基础路径
-axios.defaults.baseURL = "http://localhost:3000"
+// axios.defaults.baseURL = "http://localhost:3000"
 //线上路径
 axios.defaults.baseURL = "http://hmtoutiao-api.atlansic.com"
 Vue.use(Vant);
