@@ -9,7 +9,7 @@
           <!-- 渲染头像时因为来自后台所以要加上后台地址 -->
           <!-- <img :src="'http://127.0.0.1:3000' + userInfo.head_img" alt /> -->
           <!-- 获取axios的基路径 -->
-          <img :src="$axios.defaults.baseURL + userInfo.head_img" />
+          <img :src="$axios.defaults.baseURL + userInfo.head_img" alt="这是图片" />
         </div>
         <div class="profile">
           <div>

@@ -3,7 +3,7 @@
     <!-- 导航 -->
     <Navigate title="我的关注" />
     <div class="left" v-for="(item,index) in follows " :key="index">
-      <img :src="$axios.defaults.baseURL+item.head_img" alt />
+      <img :src="$axios.defaults.baseURL+item.head_img" alt="这是图片" />
       <div class="content">
         <p>{{item.nickname}}</p>
         <p>{{moment(item.create_date).format("YYYY - MM - DD")}}</p>

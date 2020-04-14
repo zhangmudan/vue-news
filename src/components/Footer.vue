@@ -1,8 +1,9 @@
 <template>
   <div class="footer">
     <div class="foot">
-      <input type="text" placeholder="发表评论" />
-
+      <router-link :to="`/post-comment/${postList.id}`">
+        <input type="text" placeholder="发表评论" />
+      </router-link>
       <router-link :to="`/post-comment/${postList.id}`" class="comment">
         <i class="iconfont iconpinglun-"></i>
         <em>{{postList.comment_length}}</em>

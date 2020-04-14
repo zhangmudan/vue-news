@@ -1,21 +1,19 @@
 <template>
   <router-link :to="`/post/${data.id}`">
-    <div>
-      <div class="imgList">
-        <div class="left">
-          <h4>{{data.title}}</h4>
-        </div>
-
-        <div class="list-img">
-          <img
-            v-for="(item,index) in data.cover"
-            :key="index"
-            :src="$axios.defaults.baseURL + item.url"
-            alt
-          />
-        </div>
-        <p>{{data.user.nickname}} {{data.comment_length}}跟帖</p>
+    <div class="imgList">
+      <div class="left">
+        <h4>{{data.title}}</h4>
       </div>
+
+      <div class="list-img">
+        <img
+          v-for="(item,index) in data.cover"
+          :key="index"
+          :src="$axios.defaults.baseURL + item.url"
+          alt="这是图片"
+        />
+      </div>
+      <p>{{data.user.nickname}} {{data.comment_length}}跟帖</p>
     </div>
   </router-link>
 </template>

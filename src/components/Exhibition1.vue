@@ -1,15 +1,11 @@
 <template>
   <router-link :to="`/post/${data.id}`">
-    <div>
-      <div>
-        <div class="img">
-          <div class="left">
-            <h4>{{data.title}}</h4>
-            <p>{{data.user.nickname}} {{data.comment_length}}跟帖</p>
-          </div>
-          <img :src="$axios.defaults.baseURL+data.cover[0].url" alt />
-        </div>
+    <div class="img">
+      <div class="left">
+        <h4>{{data.title}}</h4>
+        <p>{{data.user.nickname}} {{data.comment_length}}跟帖</p>
       </div>
+      <img :src="$axios.defaults.baseURL+data.cover[0].url" alt="这是图片" />
     </div>
   </router-link>
 </template>
@@ -23,6 +19,8 @@ export default {
 <style scoped lang='less'>
 .img {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 20/360 * 100vw 10/360 * 100vw 0;
   border-bottom: 1px solid #eee;
   img {
@@ -31,6 +29,8 @@ export default {
     height: 75/360 * 100vw;
     //不压缩图片
     flex-shrink: 0;
+    object-fit: cover;
+    margin-left: 10/360 * 100vw;
   }
   .left {
     h4 {

@@ -12,7 +12,7 @@
         <div class="comment" v-for="(item,index) in list " :key="index">
           <div class="user">
             <div class="user-info">
-              <img :src="$axios.defaults.baseURL+item.user.head_img" alt />
+              <img :src="$axios.defaults.baseURL+item.user.head_img" alt="这是图片" />
               <div class="info">
                 <p>{{item.user.nickname}}</p>
                 <!-- moment().fromNow 就是显示距离到当前的时间 -->
