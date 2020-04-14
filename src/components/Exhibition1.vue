@@ -31,6 +31,7 @@ export default {
     flex-shrink: 0;
     object-fit: cover;
     margin-left: 10/360 * 100vw;
+    margin-bottom: 5px;
   }
   .left {
     h4 {

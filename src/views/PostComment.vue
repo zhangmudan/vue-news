@@ -150,7 +150,8 @@ export default {
         this.pageIndex = 1;
         this.getList();
         // 清空回复的数据
-        this.reply = {};
+        this.list_item = {};
+        this.isFocus = false;
       });
     },
     //回复
