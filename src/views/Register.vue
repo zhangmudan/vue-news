@@ -1,7 +1,7 @@
 <template>
   <div class="middle">
     <div>
-      <i class="iconfont iconicon-test"></i>
+      <i class="iconfont iconicon-test" @click="$router.replace('/')"></i>
     </div>
     <div class="logo">
       <i class="iconfont iconnew"></i>
@@ -77,6 +77,7 @@ export default {
         const { message } = res.data;
         // 使用vant的弹窗提示用，success表示成功的弹窗
         this.$toast.success(message);
+        this.$router.replace("/login");
       });
     }
   }

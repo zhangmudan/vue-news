@@ -1,7 +1,7 @@
 <template>
   <div class="middle">
     <div>
-      <i class="iconfont iconicon-test" @click="$router.back()"></i>
+      <i class="iconfont iconicon-test" @click="$router.replace('/')"></i>
     </div>
     <div class="logo">
       <i class="iconfont iconnew"></i>

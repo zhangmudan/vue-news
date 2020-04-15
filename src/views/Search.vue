@@ -146,6 +146,7 @@ export default {
     input {
       width: 258/360 * 100vw;
       height: 36/360 * 100vw;
+      // line-height: 36/360 * 100vw;
       border: 0;
       border: 1px solid #ccc;
       border-radius: 18/360 * 100vw;
