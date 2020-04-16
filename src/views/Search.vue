@@ -179,6 +179,9 @@ export default {
       padding: 5px;
       font-size: 12/360 * 100vw;
       span {
+        width: 30%;
+        height: 20/360 * 100vw;
+        line-height: 20/360 * 100vw;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

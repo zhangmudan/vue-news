@@ -48,7 +48,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20/360 * 100vw;
+    padding: 10/360 * 100vw;
     width: 100%;
     .active {
       color: #ff0000;
