@@ -88,7 +88,7 @@ export default {
   .channe {
     display: flex;
     flex-wrap: wrap;
-
+    font-size: 14/360 * 100vw;
     span {
       width: 65/360 * 100vw;
       height: 35/360 * 100vw;
@@ -110,10 +110,12 @@ export default {
   .channe {
     display: flex;
     flex-wrap: wrap;
+    font-size: 14/360 * 100vw;
     span {
       width: 65/360 * 100vw;
       height: 35/360 * 100vw;
       line-height: 35/360 * 100vw;
+
       text-align: center;
       border: 1px solid #aaa;
       margin-bottom: 15/360 * 100vw;

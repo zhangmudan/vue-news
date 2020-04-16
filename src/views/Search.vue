@@ -139,14 +139,15 @@ export default {
     .iconsearch {
       position: absolute;
       font-size: 14/360 * 100vw;
+      line-height: 42/360 * 100vw;
       color: #999;
       left: 15/360 * 100vw;
-      top: 2px;
+      top: 5px;
     }
     input {
       width: 258/360 * 100vw;
       height: 36/360 * 100vw;
-      // line-height: 36/360 * 100vw;
+      line-height: 36/360 * 100vw;
       border: 0;
       border: 1px solid #ccc;
       border-radius: 18/360 * 100vw;

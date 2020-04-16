@@ -21,10 +21,10 @@
             </div>
             <div class="reply" @click="handleReply(item)">回复</div>
           </div>
-          <CommentFloor v-if="item.parent" :data="item" @replyFloor="handleReply" />
           <div class="content">
             <p>{{item.content}}</p>
           </div>
+          <CommentFloor v-if="item.parent" :data="item.parent" @replyFloor="handleReply" />
         </div>
       </van-list>
     </div>

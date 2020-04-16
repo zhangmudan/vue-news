@@ -17,15 +17,15 @@
     <!-- sticky：是否使用粘性定位布局 -->
     <!-- swipeable: 是否开启手势滑动切换 -->
     <!-- v-if和v-for编译器不让一同使用 所以才会有红色警告 -->
-    <van-tabs v-model="active" sticky swipeable @scroll="getScroll">
-      <van-tab
-        v-for="(item, index) in categories"
-        :key="index"
-        :title="item.name"
-        v-if="item.is_top===1||item.name==='∨'"
-      >
-        <!-- 下拉刷新 -->
-        <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+    <!-- 下拉刷新 -->
+    <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+      <van-tabs v-model="active" sticky swipeable @scroll="getScroll">
+        <van-tab
+          v-for="(item, index) in categories"
+          :key="index"
+          :title="item.name"
+          v-if="item.is_top===1||item.name==='∨'"
+        >
           <!-- van的列表组件 -->
           <!-- @load 滚动到底部时候触发的函数 -->
           <van-list
@@ -46,9 +46,9 @@
               <Exhibition3 :data="subItem" v-if="subItem.type===2" />
             </div>
           </van-list>
-        </van-pull-refresh>
-      </van-tab>
-    </van-tabs>
+        </van-tab>
+      </van-tabs>
+    </van-pull-refresh>
   </div>
 </template>
 
@@ -70,7 +70,11 @@ export default {
   // beforeRouteEnter 守卫 不能 访问 this
   beforeRouteEnter(to, from, next) {
     // 如果是从栏目管理页进来的，就把数据初始化
-    if (from.path === "/column") {
+    if (
+      from.path === "/column" ||
+      from.path === "/login" ||
+      from.path === "/personal"
+    ) {
       // 通过 `vm` 访问组件实例, vm就是this
       next(vm => {
         //强制刷新页面
@@ -308,6 +312,7 @@ export default {
 
 /deep/ .van-tab {
   flex-basis: 15% !important;
+  line-height: 44/360 * 100vw;
 }
 
 /deep/ .van-tab:nth-last-child(2) {
@@ -317,10 +322,13 @@ export default {
   right: 0;
   top: 0;
   box-sizing: unset;
+  height: 44/360 * 100vw;
+  line-height: 44/360 * 100vw;
 }
 
 /deep/ .van-tabs__wrap {
   padding-right: 20/360 * 100vw;
+  height: 44/360 * 100vw;
 }
 
 /deep/ .van-tabs__nav {
@@ -333,5 +341,8 @@ export default {
 
 /deep/ .van-tab--active {
   border-bottom: 1px #ff0000 solid;
+}
+/deep/ .van-tab__text {
+  font-size: 14/360 * 100vw;
 }
 </style>

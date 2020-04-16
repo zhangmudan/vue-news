@@ -1,7 +1,6 @@
 <template>
   <div class="floor">
     <div class="user-floor">
-      <CommentFloor v-if="data.parent" :data="data.parent" @replyFloor="handleReply" />
       <div class="user-info">
         <div class="info">
           <img :src="$axios.defaults.baseURL+data.user.head_img" alt />
@@ -12,9 +11,8 @@
         </div>
         <div class="reply" @click="handleReply(data)">回复</div>
       </div>
-      <div class="floor-content">
-        <p>{{data.content}}</p>
-      </div>
+      <div class="floor-content">{{data.content}}</div>
+      <CommentFloor v-if="data.parent" :data="data.parent" @replyFloor="handleReply" />
     </div>
   </div>
 </template>

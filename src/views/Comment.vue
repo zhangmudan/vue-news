@@ -10,7 +10,7 @@
         <div class="parent-content">{{item.parent.content }}</div>
       </div>
       <div class="user-comment">{{item.content}}</div>
-      <router-link to="#" class="link-post">
+      <router-link :to="`/post/${item.post.id}`" class="link-post">
         <div>原文：{{item.post.title}}</div>
         <i class="iconfont iconjiantou1"></i>
       </router-link>
@@ -44,7 +44,7 @@ export default {
         Authorization: local.token
       }
     }).then(res => {
-      // console.log(res);
+      console.log(res);
       const { data } = res.data;
       this.dataArr = data;
       // console.log(data);
