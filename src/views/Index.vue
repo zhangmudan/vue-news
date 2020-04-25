@@ -24,7 +24,7 @@
           v-for="(item, index) in categories"
           :key="index"
           :title="item.name"
-          v-if="item.is_top===1||item.name==='∨'"
+          v-if="item.is_top === 1 || item.name === '∨'"
         >
           <!-- van的列表组件 -->
           <!-- @load 滚动到底部时候触发的函数 -->
@@ -40,15 +40,27 @@
               <!-- 只有单张图片的 -->
               <Exhibition1
                 :data="subItem"
-                v-if="subItem.type===1&&subItem.cover.length>0&&subItem.cover.length<3"
+                v-if="
+                  subItem.type === 1 &&
+                    subItem.cover.length > 0 &&
+                    subItem.cover.length < 3
+                "
               />
-              <Exhibition2 v-if="subItem.type===1&&subItem.cover.length>2" :data="subItem" />
-              <Exhibition3 :data="subItem" v-if="subItem.type===2" />
+              <Exhibition2
+                v-if="subItem.type === 1 && subItem.cover.length > 2"
+                :data="subItem"
+              />
+              <Exhibition3 :data="subItem" v-if="subItem.type === 2" />
             </div>
           </van-list>
         </van-tab>
       </van-tabs>
     </van-pull-refresh>
+    <div class="qrcode">
+      <!-- 二维码 -->
+      <canvas id="qrcode-stage"></canvas>
+      <p>手机扫码查看</p>
+    </div>
   </div>
 </template>
 
@@ -59,6 +71,8 @@ import Exhibition1 from "@/components/Exhibition1";
 import Exhibition2 from "@/components/Exhibition2";
 //引入组件3
 import Exhibition3 from "@/components/Exhibition3";
+//生成二维码
+import QRCode from "qrcode";
 
 export default {
   //添加name值用于keep-alive中缓存
@@ -76,7 +90,7 @@ export default {
       from.path === "/personal"
     ) {
       // 通过 `vm` 访问组件实例, vm就是this
-      next(vm => {
+      next((vm) => {
         //强制刷新页面
         // vm.$router.go(0);
         // 初始化active回到第一个栏目
@@ -98,7 +112,7 @@ export default {
       // list: [],
       // loading: false, // 是否正在加载中
       // finished: false, // 是否已经加载完毕
-      refreshing: false // 是否正在下拉加载
+      refreshing: false, // 是否正在下拉加载
     };
   },
   // 监听属性
@@ -106,7 +120,7 @@ export default {
     // 监听tab栏的切换
     active() {
       // 先过滤出is_top等于1
-      const arr = this.categories.filter(v => {
+      const arr = this.categories.filter((v) => {
         return v.is_top || v.name === "∨";
       });
       // console.log(arr);
@@ -122,13 +136,13 @@ export default {
       setTimeout(() => {
         window.scrollTo(0, this.categories[this.active].scrollY);
       }, 20);
-    }
+    },
   },
   //注册组件
   components: {
     Exhibition1,
     Exhibition2,
-    Exhibition3
+    Exhibition3,
   },
   //activated 只对keep-alive的组件有用,当组件每次被渲染的时候才会执行
   // activated(){//初始化active回到第一个栏目
@@ -136,6 +150,14 @@ export default {
   //mounted 只会执行一次
   mounted() {
     this.rolode();
+    const canvas = document.querySelector("#qrcode-stage");
+    // 第一个参数canvas节点元素
+    // 第二个是生成二维码的链接
+    QRCode.toCanvas(
+      canvas,
+      "http://my-bucket-1301866768.cos-website.ap-guangzhou.myqcloud.com",
+      { width: 200 }
+    );
   },
   methods: {
     //加载栏目
@@ -165,7 +187,7 @@ export default {
     },
     //每个栏目都有自己的状态
     getPage() {
-      this.categories = this.categories.map(v => {
+      this.categories = this.categories.map((v) => {
         v.pageIndex = 1;
         v.post = [];
         v.loading = false; // 组件的是否正在加载中
@@ -193,20 +215,20 @@ export default {
         params: {
           pageIndex,
           pageSize: 5,
-          category: id
-        }
+          category: id,
+        },
       };
       if (name === "关注") {
         config.headers = {
-          Authorization: this.token
+          Authorization: this.token,
         };
       }
-      this.$axios(config).then(res => {
+      this.$axios(config).then((res) => {
         // console.log(res);
         const { data, total } = res.data;
         this.categories[this.active].post = [
           ...this.categories[this.active].post,
-          ...data
+          ...data,
         ];
         // 加载状态结束
         this.categories[this.active].loading = false;
@@ -224,15 +246,15 @@ export default {
     getCategories() {
       //未登录
       const config = {
-        url: "/category"
+        url: "/category",
       };
       //已登录
       if (this.token) {
         config.headers = {
-          Authorization: this.token
+          Authorization: this.token,
         };
       }
-      this.$axios(config).then(res => {
+      this.$axios(config).then((res) => {
         // console.log(res);
         const { data } = res.data;
         data.push({ name: "∨" });
@@ -257,12 +279,36 @@ export default {
       // 表示加载完毕
       this.refreshing = false;
       console.log("正在下拉刷新");
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped lang="less">
+@media screen and (max-width: 750px) {
+  .qrcode {
+    display: none;
+  }
+}
+.qrcode {
+  height: fit-content;
+  width: 250px;
+  height: 250px;
+  position: fixed;
+  right: 0;
+  bottom: 10px;
+  text-align: center;
+  #qrcode-stage {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 10px;
+  }
+
+  p {
+    line-height: 2;
+    text-align: center;
+  }
+}
 .header {
   height: 50/360 * 100vw;
   background: #ff0000;
